@@ -1,0 +1,11 @@
+:root{
+    --bs-body-font-family: var(--font-family) !important;  
+    --bs-body-font-size: var(--font-size) !important;
+}
+
+.v-text-field, .v-text-field__details{
+    color: var(--dark-blue) !important;
+}
+
+
+
