@@ -1,0 +1,34 @@
+@import url('setup.css');
+
+.font-blue{
+    color: var(--dark-blue) !important;
+}
+
+.font-faded-blue{
+    color: var(--faded-dark-blue) !important;
+}
+
+.font-white{
+    color: var(--white) !important;
+}
+
+.font-red{
+    color: var(--danger-red) !important;    
+}
+
+.bg-blue{
+    background-color: var(--dark-blue) !important;
+}
+
+.bg-faded-blue{
+    background-color: var(--faded-dark-blue) !important;
+}
+
+.bg-white{
+    background-color: var(--white) !important;
+}
+
+.bg-red{
+    background-color: var(--danger-red) !important;
+}
+
