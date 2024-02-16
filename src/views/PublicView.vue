@@ -22,7 +22,7 @@
                 <ClassSchedule v-if="currentDisplay===3" />
                 <ImportantContacts v-if="currentDisplay===4" />
                 <FaqSection v-if="currentDisplay===5" />
-
+                <ActivitiesCalendar v-if="currentDisplay===2" />
             </v-col>
         </v-row>
     </v-container>
@@ -37,7 +37,9 @@
 
             <v-col sm="8" lg="6" class="position-relative">
                 <v-container style="height: 100vh;" class="">
-                    <v-row no-gutters class=" position-absolute top-50 start-50 translate-middle h-75 w-75 align-content-baseline">
+                    <v-row no-gutters
+                        :class="currentDisplay === 2 ? 'h-90 w-90' : 'h-75'"
+                        class=" position-absolute top-50 start-50 translate-middle w-75 align-content-baseline">
                         <v-col cols="12" class="" style="height: fit-content;">
                             <v-row no-gutters>
                                 <v-col cols="12" v-if="currentDisplay !== 1">
@@ -46,15 +48,18 @@
                             </v-row>
                             <PublicViewHeader v-if="currentDisplay !== 1" :title="currentDisplay === 2 ? 'Calendário' : currentDisplay === 3 ? 'Horário de Aulas' : currentDisplay === 4 ? 'Contatos Importantes' : currentDisplay === 5 ? 'FAQ' : ''" /> 
                         </v-col>
-                        <v-col cols="12" id="scrollable_col" class="h-75 overflow-y-auto">
+                        <v-col cols="12" id="scrollable_col" :class="currentDisplay === 2 ? 'h-100' : 'h-75'" class=" overflow-y-auto">
                             <MainMenu v-if="currentDisplay===1" />
                             <ClassSchedule v-if="currentDisplay===3" />
                             <ImportantContacts v-if="currentDisplay===4" />
                             <FaqSection v-if="currentDisplay===5" />
+                            <ActivitiesCalendar v-if="currentDisplay===2" />
                         </v-col>
                     </v-row>
                 </v-container>
+                            
             </v-col>
+           
         </v-row>
     </v-container>
 </template>
@@ -63,15 +68,16 @@
 import NavBar from '../components/smaller_components/NavBar.vue'
 import MainMenu from '../components/MainMenu.vue'
 import ClassSchedule from '../components/ClassSchedule.vue'
-import BackBtn from '../components/smaller_components/BackBtn.vue'
+import BackBtn from '../components/smaller_components/buttons/BackBtn.vue'
 import PublicViewHeader from '@/components/smaller_components/PublicViewHeader.vue'
 import ImportantContacts from '@/components/ImportantContacts.vue'
 import FaqSection from '@/components/FaqSection.vue'
+import ActivitiesCalendar from '@/components/ActivitiesCalendar.vue'
 
 export default {
     name: 'PublicView',
     components: {
-        NavBar, MainMenu, ClassSchedule, BackBtn, PublicViewHeader, ImportantContacts, FaqSection
+        NavBar, MainMenu, ClassSchedule, BackBtn, PublicViewHeader, ImportantContacts, FaqSection, ActivitiesCalendar
     },
     data(){
         return{
