@@ -10,18 +10,13 @@
                 <contact-card v-for="c in filteredResult" :key="c.name" :name="c.name" :phone="c.phone" :email="c.email" />
             </v-col>
         </v-row>
-        <!-- <v-row v-if="showScrollTopBtn" no-gutters class="ic_scrolltop_btn_row d-none d-md-block">
-            <v-col cols="2" class="mx-auto text-center ic_scrolltop_btn_col">
-                <v-btn theme="light" variant="flat"  icon="mdi-chevron-up" :onmouseup="()=>scrollToTop()"></v-btn>
-            </v-col>
-        </v-row> -->
     </v-container>
 
 </template>
 
 <script lang="ts">
-import SearchBar from './smaller_components/SearchBar.vue';
-import ContactCard from './smaller_components/ContactCard.vue';
+import SearchBar from './smaller_components/text-fields/SearchBar.vue';
+import ContactCard from './smaller_components/cards/ContactCard.vue';
 import { contacts } from '@/stores/temp/contacts';
 export default {
     name: 'ImportantContacts',
@@ -38,14 +33,6 @@ export default {
         this.filteredResult = contacts
     },
     methods:{
-        // scrollToTop(){
-        //     const el = document.getElementById("scrollable_col")
-            
-        //     if(el){
-        //         el.style.scrollBehavior = "smooth"
-        //         el.scrollTo(0, (el.scrollHeight * -1))
-        //     }
-        // },
         filterContacts(v : string){
             this.filteredResult = contacts.filter(item => item.name.toLowerCase().includes(v.toLowerCase()) || item.phone.includes(v) || item.email.toLowerCase().includes(v.toLowerCase()))
         }
