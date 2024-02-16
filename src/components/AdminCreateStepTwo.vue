@@ -1,0 +1,163 @@
+<template>
+
+    <v-row no-gutters>
+        <v-col cols="12">
+            <h1 class="font-blue text-center">CRIAR CONTA</h1>
+            <h4 class="font-faded-blue text-center opacity-50">Você precisa ter permissão de um admin</h4>
+        </v-col>
+        <v-col cols="12" sm="6" md="4" lg="3" class="mt-5 mx-auto">
+            <v-form v-model="form">
+                <v-row no-gutters class="w-fit mx-auto">
+                    <v-col :cols="otpValid ? 11 : 12" class="mx-auto">
+                        <v-otp-input
+                            :loading="otpLoading"
+                            :model-value="otp"
+                            type="text" autofocus
+                            
+                            :length="6" length-type="fixed"
+                            @finish="val => handleUpdate(val)"
+                            @update:model-value="val => otp = val"
+                            />
+                    </v-col>
+                    <v-col v-if="otpValid" cols="1" class="text-center">
+                        <v-icon size="large" class="top-50 translate-middle-y" style="font-size: 2.5rem;" color="var(--green)" icon="mdi-check"></v-icon>
+                    </v-col>
+                </v-row>
+                <v-row no-gutters class="">
+                </v-row>
+                <v-row no-gutters class="">
+                </v-row>
+                <v-row no-gutters class="mt-5">
+                    <!-- <p v-if="error" class="font-red mx-auto font-12">Ops... Tivemos algum erro inesperado.</p> -->
+                    <v-col cols="6" class="mx-auto">
+                        <v-btn
+                            size="large" text="FINALIZAR"
+                            color="var(--dark-blue)" variant="outlined"
+                            class="mx-auto w-fit responsive_font"
+                            type="submit" block :loading="loading" :disabled="!form" 
+                            
+                            @click="(e : any) => e.preventDefault()"
+                        />
+                    </v-col>
+                    
+                </v-row>
+                
+            </v-form>
+            <v-row no-gutters>
+            
+                <v-btn
+                    size="large" text="Desisti! Quero voltar..."
+                    color="var(--dark-blue)" variant="text"
+                    @click="e => $router.push('/admin/login')"
+                    class="mx-auto w-fit"/>
+            </v-row>
+        </v-col>
+    </v-row>
+
+</template>
+
+<script lang="ts">
+import { register, isLoggedIn } from '@/firebase/authorization';
+import { admin_create } from '@/https/admin';
+import { validateCode } from '@/https/code';
+import { useAccountCreationStore } from '@/stores/accountCreation';
+import { notEmpty } from '@/utils/validations'
+import type { User } from 'firebase/auth';
+
+export default{
+    name: 'AdminLoginStepTwo',
+        components: {  },
+        data() {
+            return {
+                notEmpty: notEmpty,
+                form: false as boolean,
+                loading: false as boolean,
+                error: false as boolean,
+                errorMsg: '' as string,
+                otpLoading: false as boolean,
+                otpValid: false as boolean,
+                otp: '' as string,
+            }
+        },
+        watch:{
+            otp(val: string){
+                this.otp = this.otp.toUpperCase()
+                
+                if(val.length === 6){
+                    this.otpLoading = true
+                    setTimeout(() => {
+                        this.otpLoading = false
+                    }, 2000)
+                }
+            }
+        },
+        methods: {
+            handleCreation(){
+                this.loading = true
+                setTimeout(() => {
+                    this.loading = false
+                    console.log("alright");
+                    
+                    this.$emit('procceed', 2)
+                }, 2000)
+            },
+            async handleUpdate(val: string){
+                this.handleCreation()
+                const user_store = useAccountCreationStore()
+
+                //store otp 
+                user_store.setOtp(val)
+                try{
+                    //validate otp
+                    const otp_validation = await validateCode();
+                    console.log("otp_validation: "+otp_validation.status);
+                    
+                    if(otp_validation.status===403) throw Error("O código não é válido"); //error message
+
+                    //set user pinia data
+                    user_store.setRole(otp_validation.response.role);
+
+                    //get user data to register
+                    const {email, password, name} = user_store.getAll();
+                    let canCreateDb = false;
+                    console.log("name: "+name);
+                    
+
+                    //create firebase account
+                    
+                    const firebase_create  = await register(email, password, name)
+                    if(!firebase_create){
+                        throw Error("Não foi possível criar a conta no Firebase");
+                    }else{
+                        canCreateDb = true;
+                    }
+
+                    if(canCreateDb){
+                        //create user in db
+                        const user = await isLoggedIn() as User | boolean
+                        console.log("isLoggedIn: "+user);
+                        
+                        if(!user) return
+                        user_store.setFirebase_uid((user as User).uid);
+                        user_store.setCreation_date_timestamp((user as User).metadata.creationTime as string)
+                        const created = await admin_create(user_store.getData());
+                        console.log("created: "+created);
+                        
+                        if(!created) throw Error("Não foi possível criar sua conta no banco de dados."); // error message
+                        this.$router.push('/admin/retrieving-user-information')
+                    }
+                }catch(e : any){
+                    this.error = true;
+                    
+                    if(e.message.includes('Não') || e.message.includes('inesperado')){
+                        this.errorMsg = e.message;
+                        console.log("error: "+this.errorMsg);
+                    }else{
+                        this.errorMsg = "Ops... Tivemos algum erro inesperado.";
+                        return
+                    }
+                }
+            }
+        }
+    }
+</script>
