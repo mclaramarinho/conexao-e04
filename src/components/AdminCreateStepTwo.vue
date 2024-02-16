@@ -23,25 +23,6 @@
                         <v-icon size="large" class="top-50 translate-middle-y" style="font-size: 2.5rem;" color="var(--green)" icon="mdi-check"></v-icon>
                     </v-col>
                 </v-row>
-                <v-row no-gutters class="">
-                </v-row>
-                <v-row no-gutters class="">
-                </v-row>
-                <v-row no-gutters class="mt-5">
-                    <!-- <p v-if="error" class="font-red mx-auto font-12">Ops... Tivemos algum erro inesperado.</p> -->
-                    <v-col cols="6" class="mx-auto">
-                        <v-btn
-                            size="large" text="FINALIZAR"
-                            color="var(--dark-blue)" variant="outlined"
-                            class="mx-auto w-fit responsive_font"
-                            type="submit" block :loading="loading" :disabled="!form" 
-                            
-                            @click="(e : any) => e.preventDefault()"
-                        />
-                    </v-col>
-                    
-                </v-row>
-                
             </v-form>
             <v-row no-gutters>
             
