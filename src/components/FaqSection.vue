@@ -3,8 +3,7 @@
         <v-row>
             <v-col cols="12">
                 <v-expansion-panels variant="popout">
-                    <v-expansion-panel v-for="(item, i) in faq" :key="i"
-                        
+                    <v-expansion-panel class="responsive_font mt-5" v-for="(item, i) in faq" :key="i"
                         :title="item.question"
                         :text="item.answer"
                     />
@@ -37,9 +36,38 @@ export default {
                 {
                     question: 'How can I report a bug?',
                     answer: 'You can report a bug by creating an issue on the GitHub repository.'
+                },
+                {
+                    question: 'How can I contact the developers?',
+                    answer: 'You can contact the developers via email at '
+                },
+                {
+                    question: 'How can I contribute to the website?',
+                    answer: 'You can contribute to the website by creating a pull request on the GitHub repository.'
+                },
+                {
+                    question: 'How can I report a bug?',
+                    answer: 'You can report a bug by creating an issue on the GitHub repository.'
+                },
+                {
+                    question: 'How can I contact the developers?',
+                    answer: 'You can contact the developers via email at '
+                },
+                {
+                    question: 'How can I contribute to the website?',
+                    answer: 'You can contribute to the website by creating a pull request on the GitHub repository.'
+                },
+                {
+                    question: 'How can I report a bug?',
+                    answer: 'You can report a bug by creating an issue on the GitHub repository.'
                 }
             ]
         }
     }
 }
 </script>
+
+<style scoped>
+
+
+</style>
