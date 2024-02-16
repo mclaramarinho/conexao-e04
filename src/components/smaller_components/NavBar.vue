@@ -1,5 +1,5 @@
 <template>
-    <v-app-bar color="var(--dark-blue)" position-sticky>
+    <v-app-bar class="p-0" color="var(--dark-blue)" position-sticky>
         <template v-slot:prepend>
             <img src="../../assets/images/unit-logo.webp" alt="">
         </template>
