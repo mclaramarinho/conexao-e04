@@ -34,7 +34,7 @@
 import classSchedule from '@/stores/temp/classSchedule';
 import timeTable from '@/stores/temp/timeTable';
 import weekdays from '@/stores/temp/weekDays';
-import ClassScheduleCells from '../components/smaller_components/ClassScheduleCells.vue'
+import ClassScheduleCells from '../components/smaller_components/tables/ClassScheduleCells.vue'
 export default {
     name: 'ClassSchedule',
     components: {
