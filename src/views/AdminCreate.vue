@@ -3,8 +3,9 @@
         <NavBar />
         <v-container class="p-5 position-absolute top-50 start-50 translate-middle">
             <AdminCreateStepOne v-if="currentStep===1 && !loadingNextPage" @procceed="e=>{handleStepChange()}" />
-            <v-circular-progress indeterminate color="var(--dark-blue)" v-if="loadingNextPage"></v-circular-progress>
-            <AdminCreateStepTwo v-if="currentStep===2" @procceed="e=>{currentStep=2}" />
+            <v-progress-circular size="large" class="position-fixed top-50 start-50 translate-middle"
+                        indeterminate color="var(--dark-blue)" v-if="loadingNextPage"></v-progress-circular>
+            <AdminCreateStepTwo v-if="currentStep===2" @procceed="e=>{handleStepChange()}" />
         </v-container>
 
         
@@ -31,9 +32,9 @@ export default {
     methods: {
         handleStepChange(){
             this.loadingNextPage = true
-            
+            this.currentStep+=1
             setTimeout(() => {
-                this.currentStep+=1
+                
                 this.loadingNextPage = false
             }, 2000);
         }
