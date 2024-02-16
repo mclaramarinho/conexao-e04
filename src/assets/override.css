@@ -3,9 +3,89 @@
     --bs-body-font-size: var(--font-size) !important;
 }
 
+/* ---------------------------------------------------------------------------------------- */
+
+/* V-TEXT-FIELD */
+
 .v-text-field, .v-text-field__details{
     color: var(--dark-blue) !important;
 }
+.v-field-label, .v-field__input {
+    font-size: 1.5rem !important;
+}
+
+/* V-TEXT-FIELD - END */
 
 
+/* ---------------------------------------------------------------------------------------- */
 
+/* V-CALENDAR */
+.v-calendar__container {
+    position: relative !important;
+    min-height: fit-content !important;
+    max-height: 100vh !important;
+    color: var(--dark-blue) !important;
+    ::after, ::before{
+        position: relative !important;
+        box-sizing: border-box !important;
+        size-adjust: 100% 100% !important;
+    }
+   ;
+}
+.v-calendar-header{
+    color: var(--dark-blue) !important;
+    
+}
+.v-calendar-weekly__day-label__today{
+    background-color: var(--faded-dark-blue) !important;
+    color: var(--white) !important;
+}
+
+.v-calendar-month__days{
+    position: relative !important;
+    max-height: 100vh !important;
+    min-height: 50% !important;
+    ::after, ::before{
+        position: relative !important;
+        box-sizing: border-box !important;
+    }
+}
+.v-calendar-month__days > .v-calendar-month__day{
+    position: relative !important;
+    min-height: 10vh !important;
+    max-height: 10vh !important;
+  }
+
+/* V-CALENDAR - END */
+
+/* ---------------------------------------------------------------------------------------- */
+
+/* V-EXPANSION-PANEL */
+
+
+.v-expansion-panel-title{
+    background-color: var(--white) !important;
+    color: var(--dark-blue) !important;
+    font-weight: 500 !important;
+}
+.v-expansion-panel-title--active{
+    background-color: var(--faded-dark-blue) !important;
+    color: var(--white) !important;
+}
+.v-expansion-panel-text{
+    background-color: var(--white) !important;
+    color: var(--dark-blue) !important;
+}
+
+@media (max-width: 768px){
+    .v-expansion-panel-title{
+        font-size: 110% !important;
+    }
+}
+@media (min-width: 768px){
+    .v-expansion-panel-title{
+        font-size: 110% !important;
+    }
+}
+
+/* V-EXPANSION-PANEL - END*/
