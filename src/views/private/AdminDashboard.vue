@@ -12,7 +12,6 @@
 import type { IUser } from "@/interfaces/IUser";
 import {admin_get_one} from "../../https/admin"
 import NavDrawer from "@/components/smaller_components/NavDrawer.vue";
-import { useUserInfoStore } from "@/stores/userInfo";
 import { useNavigationHistory } from "@/stores/useNavigationHistory";
 export default {
     name: 'AdminDashboard',
