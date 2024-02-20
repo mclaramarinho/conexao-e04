@@ -6,6 +6,8 @@
         :rail="!isMobile()"
         mobile-breakpoint="xs" 
         :touchless="!isMobile()"
+        id="nav-drawer"
+        :absolute="false"
         :style="isMobile() && (showDrawer ? {transform:'translateY(0%)'} : {transform:'translateY(80%)'})"
         permanent>
         <template v-slot:prepend v-if="isMobile()">
@@ -19,8 +21,9 @@
         </template>
         <v-list>
             <v-list-item
-                prepend-icon="mdi-account-circle" variant="text"
+                prepend-icon="mdi-home" variant="text"
                 :title="name"
+                @click="e=>navigateEvent('')"
                 :subtitle="email + ' - ' + role" />
             <v-divider />
         </v-list>
@@ -72,7 +75,7 @@ export default {
     },
     methods:{
         isMobile(){
-            if(this.$vuetify.display.sm || this.$vuetify.display.xs) return true
+            if(this.$vuetify.display.xs) return true
             return false
         },
         navigateEvent(value: string){
