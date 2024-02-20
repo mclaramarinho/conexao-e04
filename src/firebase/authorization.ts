@@ -40,9 +40,9 @@ export async function isLoggedIn() : Promise<boolean | User>{
     return new Promise((res, rej) => {
         a.onAuthStateChanged((user) => {
             if(user){
-                res(user);
+                res(user as User);
             } else {
-                res(false);
+                rej(false);
             }
         })
     })
