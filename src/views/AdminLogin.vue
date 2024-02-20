@@ -53,6 +53,7 @@ import EmailField from '@/components/smaller_components/text-fields/EmailField.v
 import PswdField from '@/components/smaller_components/text-fields/PswdField.vue';
 import TextBtn from '@/components/smaller_components/buttons/TextBtn.vue';
 import { login } from '@/firebase/authorization';
+import { useNavigationHistory } from '@/stores/useNavigationHistory';
 export default {
     name: 'AdminLogin',
     components: { NavBar, EmailField, PswdField, TextBtn },
@@ -79,7 +80,8 @@ export default {
             this.errorLogin = false
         }
     },
-    beforeCreate() {
+    beforeRouteLeave(){
+        useNavigationHistory().setPreviousRoute(this.$route.path);
     },
     methods: {
         handleLogin(e : any){
@@ -87,8 +89,7 @@ export default {
             console.log(this.email);
             
             login(this.email as string, this.pswd as string).then((res) => {
-                console.log(res);
-                res ? this.$router.push('/admin/retrieving-user-information') : console.log("error");
+                this.$router.push('/admin/retrieving-user-information');
             }).catch((err) => {
                 this.errorLogin = true;
                 console.log(err);
