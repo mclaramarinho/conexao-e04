@@ -7,20 +7,38 @@
 
 <script lang="ts">
 import {isLoggedIn} from '@/firebase/authorization';
-import type { User } from 'firebase/auth';
+import { useNavigationHistory } from '@/stores/useNavigationHistory';
+import { useUserInfoStore } from '@/stores/userInfo';
 
 export default {
     name: 'LoadingUserContent',
+
     created() {
         setTimeout(() => {
-            isLoggedIn().then((r : User | boolean) => {
+            isLoggedIn().then(async (r) => {
                 if(r){
-                    this.$router.push(`/admin/dashboard/${(r as User).uid}`);
-                }else{
-                    this.$router.push('/admin/login');
+                    console.log("Usuário logado");
+                    if(useUserInfoStore().UID === "" || useUserInfoStore().UID === undefined || useUserInfoStore().UID === null){
+                        await useUserInfoStore().update();
+                    }
+                    this.chooseNext()
                 }
+            }).catch(err => {
+                this.$router.push("/admin/login")
             })
-        }, 5000);
+        }, 2000);
+    },
+    methods:{
+        chooseNext(){
+            const prev = useNavigationHistory().previous;
+            if((prev === "/admin/login" || prev === "/admin/create")){
+                const next = `/admin/dashboard/${useUserInfoStore().UID}`
+
+                this.$router.push(next);
+            }else{
+                this.$router.push(prev)
+            }
+        }
     }
 }
 </script>
