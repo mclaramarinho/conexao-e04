@@ -49,3 +49,7 @@ html{
 .font-12{
     font-size: 1.2rem !important;
 }
+
+.border-radius-0{
+    border-radius: 0 !important;
+}
