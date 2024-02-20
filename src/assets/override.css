@@ -89,3 +89,28 @@
 }
 
 /* V-EXPANSION-PANEL - END*/
+
+.v-navigation-drawer{
+    color: var(--dark-blue) !important;
+}
+
+@media (max-width: 768px){
+    .v-list-item-title{
+        font-size: 130% !important;
+    }
+    .v-list-item-subtitle{
+        font-size: 110% !important;
+    }
+}
+
+@media (min-width: 768px){
+    .v-list-item-title{
+        font-size: 130% !important;
+    }
+    .v-list-item-subtitle{
+        font-size: 110% !important;
+    }
+}
+.v-list-item-subtitle{
+    margin-top: 2%;
+}
