@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import PublicView from '../views/PublicView.vue'
 import { isLoggedIn } from '@/firebase/authorization'
+import { useNavigationHistory } from '@/stores/useNavigationHistory'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -36,12 +37,11 @@ const router = createRouter({
       beforeEnter: (to, from, next) => {
         isLoggedIn().then((loggedIn) => {
           if(loggedIn){
-            console.log(loggedIn);
-            
-              next({name: 'retrieving-user-information'})
-          } else {
-            next()
+            useNavigationHistory().setPreviousRoute('/admin/login');
+            next({name: 'retrieving-user-information'})
           }
+        }).catch((error) => {
+          next()
         })
       },
       component: () => import('../views/AdminLogin.vue')
@@ -63,35 +63,37 @@ const router = createRouter({
         isLoggedIn().then((loggedIn) => {
           if(loggedIn){
             next()
-          } else {
-            next({name: 'admin-login'})
+          }else{
+            next({name: 'retrieving-user-information'})
           }
+        }).catch((error) => {
+          next({name: 'admin-login'})
         })
       },
       component: () => import('../views/private/AdminDashboard.vue'),
       children: [
         {
-          path: 'calendario',
+          path: '/admin/dashboard/:id/eventos',
           name: 'admin-calendar',
           component: () => import('../views/private/AdminDashboard.vue')
         },
         {
-          path: 'horario-de-aulas',
+          path: '/admin/dashboard/:id/disciplinas',
           name: 'admin-class-schedule',
           component: () => import('../views/private/AdminDashboard.vue')
         },
         {
-          path: 'contatos-importantes',
+          path: '/admin/dashboard/:id/contatos',
           name: 'admin-important-contacts',
           component: () => import('../views/private/AdminDashboard.vue')
         },
         {
-          path: 'faq',
+          path: '/admin/dashboard/:id/faq',
           name: 'admin-faq',
           component: () => import('../views/private/AdminDashboard.vue')
         },
         {
-          path: 'configuracoes',
+          path: '/admin/dashboard/:id/configuracoes',
           name: 'admin-settings',
           component: () => import('../views/private/AdminDashboard.vue')
         }
