@@ -17,6 +17,7 @@
 import NavBar from '@/components/smaller_components/NavBar.vue';
 import AdminCreateStepOne from '@/components/AdminCreateStepOne.vue';
 import AdminCreateStepTwo from '@/components/AdminCreateStepTwo.vue';
+import { useNavigationHistory } from '@/stores/useNavigationHistory';
 export default {
     name: 'AdminLogin',
     components: { NavBar,  AdminCreateStepOne, AdminCreateStepTwo},
@@ -29,12 +30,14 @@ export default {
             loadingNextPage: false as boolean
         }
     },
+    beforeRouteLeave(){
+        useNavigationHistory().setPreviousRoute(this.$route.path);
+    },
     methods: {
         handleStepChange(){
             this.loadingNextPage = true
             this.currentStep+=1
             setTimeout(() => {
-                
                 this.loadingNextPage = false
             }, 2000);
         }
