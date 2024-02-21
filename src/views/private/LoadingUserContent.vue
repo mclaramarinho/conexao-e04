@@ -17,10 +17,10 @@ export default {
         setTimeout(() => {
             isLoggedIn().then(async (r) => {
                 if(r){
-                    console.log("Usuário logado");
                     if(useUserInfoStore().UID === "" || useUserInfoStore().UID === undefined || useUserInfoStore().UID === null){
                         await useUserInfoStore().update();
                     }
+                    console.log("Usuário logado");
                     this.chooseNext()
                 }
             }).catch(err => {
