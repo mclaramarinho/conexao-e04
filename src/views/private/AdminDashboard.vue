@@ -1,7 +1,7 @@
 <template>
     <v-container fluid class="h-100 p-0">
         
-        <v-row no-gutters class="h-100 w-100 m-0">
+        <v-row no-gutters class="h-100 w-100 m-0" >
             <v-col cols="12" sm="1">
                 <nav-drawer 
                     :email="(admin.email as string)" :name="(admin.name as string)" :role="(admin.role as string)" />
