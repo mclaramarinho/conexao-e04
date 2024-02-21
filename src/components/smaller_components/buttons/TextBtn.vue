@@ -4,7 +4,7 @@
         :text="text"
         variant="text"
         :color="color"
-        :class="'mx-auto w-fit' + classes"
+        :class="'mx-auto w-fit ' + classes"
         @click="() => $emit('clicked', value)" />
 </template>
 
