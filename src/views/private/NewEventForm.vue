@@ -53,7 +53,7 @@
                             class="w-fit font-12" color="var(--dark-blue)"
                             prepend-icon="mdi-phone" append-icon="mdi-email"
                             :model-value="event.contactType"
-                            @change="e => event.contactType = e.target.checked" />
+                            @change="(e : HTMLInputElement) => event.contactType = e.target.checked" />
                     </v-col>
                 </v-row>
             </v-col>
@@ -68,7 +68,7 @@
                 </v-row>
                 
                 <v-row no-gutters class="mt-5">
-                    <text-btn text="Salvar" variant="outlined" @click="e => console.log(event)" />
+                    <text-btn text="Salvar" variant="outlined" @click="e => handleEventCreation()" />
                 </v-row>
             </v-col>
             
@@ -79,6 +79,7 @@
 <script lang="ts">
 import EventPreviewCard from '@/components/smaller_components/cards/EventPreviewCard.vue';
 import TextBtn from '@/components/smaller_components/buttons/TextBtn.vue';
+import { useUserInfoStore } from '@/stores/userInfo';
 export default {
     name: 'new-event-form',
     components: {
@@ -101,7 +102,9 @@ export default {
     created(){
     },
     methods:{
-        
+        handleEventCreation(){
+            console.log(useUserInfoStore().UID)
+        }
     }
 }
 </script>
