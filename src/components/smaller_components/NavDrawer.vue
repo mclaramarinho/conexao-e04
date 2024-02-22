@@ -60,6 +60,7 @@
 
 <script lang="ts">
 import { useNavigationHistory } from '@/stores/useNavigationHistory';
+import { useUserInfoStore } from '@/stores/userInfo';
 
 export default {
     name: 'NavDrawer',
@@ -79,7 +80,7 @@ export default {
             return false
         },
         navigateEvent(value: string){
-            useNavigationHistory().setPreviousRoute(this.$route.path);
+
             const fullBase = this.$route.path.split('/');
             
             if(fullBase.length > 4) fullBase.pop();
@@ -87,9 +88,9 @@ export default {
             const base = fullBase.join('/');
             
             const normalizedValue = value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-            const nextPath = base+'/'+normalizedValue;
-
-            this.$router.replace(nextPath);
+            
+            this.$router.push({path: base+'/'+normalizedValue});
+            
     },
 }
 }
