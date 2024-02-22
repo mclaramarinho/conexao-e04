@@ -3,11 +3,13 @@ import App from './App.vue'
 import router from './router'
 import { createVuetify } from 'vuetify'
 import 'vuetify/styles'
+import Maska, { vMaska }  from 'maska'
 import './assets/main.css'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
 import '@mdi/font/css/materialdesignicons.css'
 import { VCalendar } from 'vuetify/labs/VCalendar'
 import { createPinia } from 'pinia'
+
 
 const pinia = createPinia()
 
@@ -26,6 +28,7 @@ const vuetify = createVuetify({
         ssr: true,
     }
 );
+app.directive('mask', vMaska)
 app.use(vuetify)
 app.use(router)
 app.use(pinia)
