@@ -17,3 +17,7 @@ export const email = [
 export const notEmpty = [
     (v : string) => !!v || 'Campo é obrigatório',
 ];
+
+export const maxChars = (max : number) => [
+    (v : string) => v.length <= max || `Campo deve ter no máximo ${max} caracteres`,
+];
