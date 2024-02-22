@@ -1,25 +1,27 @@
 <template>
-    <v-form>
+    <v-form >
         <v-row no-gutters>
             <v-col cols="12" class="d-md-none"></v-col>
             <v-col cols="12" md="6">
                 <v-row no-gutters>
-                    <v-col cols="12" lg="8" class="mb-lg-5 mb-0">
+                    <v-col cols="12" lg="8" class="mb-lg-5 mt-2 mb-0">
                         <v-text-field
-                            type="text" hide-details variant="outlined"
+                            type="text" variant="outlined" :hide-details="event.eventName.length <= 30"
                             label="Nome" :model-value="event.eventName"
+                            :rules="maxChars(30)" validate-on="input"
                             @input="(e : HTMLInputElement) => event.eventName = e.target?.value" />
                     </v-col>
                     <v-col cols="12" lg="4" class="mt-0">
                         <v-checkbox
                             base-color="var(--dark-blue)" hide-details
-                            label="É obrigatório?" :center-affix="false"
+                            label="É obrigatório?"  center-affix
                             :model-value="event.isMandatory"
                             @change="(e : HTMLInputElement) => event.isMandatory = e.target?.checked" />
                     </v-col>
-                    <v-col cols="12">
+                    <v-col cols="12" class="mb-5">
                         <v-textarea label="Descrição" variant="outlined"
-                            :model-value="event.eventDescription" 
+                            :model-value="event.eventDescription" counter
+                            :rules="maxChars(100)" validate-on="input"
                             @change="(e : HTMLInputElement) => event.eventDescription = e.target?.value"/>
                     </v-col>
                 </v-row>
@@ -27,22 +29,26 @@
                     <v-text-field
                         variant="outlined" type="datetime-local"
                         label="Início" :model-value="event.eventStart"
+                        name="eventStart"
                         @input="(e : HTMLInputElement) => event.eventStart = e.target?.value" />
                     <v-text-field
                         variant="outlined" type="datetime-local"
-                        label="Fim" :model-value="event.eventStart"
-                        @input="(e : HTMLInputElement) => event.eventStart = e.target?.value" />
+                        label="Fim" :model-value="event.eventEnd"
+                        name="eventEnd"
+                        @input="(e : HTMLInputElement) => event.eventEnd = e.target?.value" />
                 </v-row>
                 <v-row no-gutters class="column-gap-5">
                     <v-col cols="12">
                         <v-text-field
                             variant="outlined" type="text"
                             label="Organizador" :model-value="event.eventDescription"
-                            @input="(e : HTMLInputElement) => event.eventDescription = e.target?.value" />
+                            @input="(e : HTMLInputElement) => event.organizer = e.target?.value" />
                     </v-col>
                     <v-col cols="12">
                         <v-text-field
+                            :class="event.contactType ? 'emailMask' : 'phoneMask'"
                             validate-on="input" variant="outlined"
+                            v-maska="['(##) #####-####', '(##) #####-####']"
                             :model-value="event.contact" @input="(e : HTMLInputElement) => event.contact = e.target?.value"
                             :label="event.contactType ? 'Email' : 'Telefone'" :type="event.contactType ? 'email' : 'tel'" />
                     </v-col>
@@ -79,32 +85,43 @@
 <script lang="ts">
 import EventPreviewCard from '@/components/smaller_components/cards/EventPreviewCard.vue';
 import TextBtn from '@/components/smaller_components/buttons/TextBtn.vue';
-import { useUserInfoStore } from '@/stores/userInfo';
+import { createEvent } from '@/https/events'
+import {maxChars} from '@/utils/validations'
 export default {
     name: 'new-event-form',
     components: {
         EventPreviewCard, TextBtn
     },
     data(){
-        return{
+     return{
             event:{
                 eventName: "" as string,
                 isMandatory: false as boolean,
                 eventDescription: "" as string,
                 eventStart: "" as string,
                 eventEnd: "" as string,
-                organizer: "" as string,
-                contact: "" as string,
+                organizer: null as null | string,
+                contact: null as null | string,
                 contactType: "phone" as "phone" | "email"
-            }
+            },
+            maxChars: maxChars,
         }
     },
-    created(){
+    mounted(){
+        document.getElementsByName('eventEnd')[0].setAttribute('min', new Date().toISOString().split('T')[0] + 'T00:00');
+        document.getElementsByName('eventStart')[0].setAttribute('max', new Date().toISOString().split('T')[0] + 'T23:59');
+        
     },
     methods:{
         handleEventCreation(){
-            console.log(useUserInfoStore().UID)
+            createEvent
         }
     }
 }
 </script>
+
+<style scoped>
+.emailMask{
+    mask: '(00) 00000-0000';
+}
+</style>
