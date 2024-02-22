@@ -22,45 +22,17 @@
         <v-list>
             <v-list-item
                 prepend-icon="mdi-home" variant="text"
-                :title="name"
-                @click="e=>navigateEvent('')"
-                :subtitle="email + ' - ' + role" />
+                :title="name" :subtitle="email + ' - ' + role" />
             <v-divider />
         </v-list>
-        <v-list>
-            <v-list-item
-                prepend-icon="mdi-calendar"
-                value="eventos"
-                @click="e=>navigateEvent(e.target?.textContent)"
-                title="Eventos"/>
-            <v-list-item
-                prepend-icon="mdi-card-account-mail"
-                value="contatos"
-                @click="e=>navigateEvent(e.target?.textContent)"
-                title="Contatos"/>
-            <v-list-item
-                prepend-icon="mdi-school"
-                value="disciplinas"
-                @click="e=>navigateEvent(e.target?.textContent)"
-                title="Disciplinas"/>
-            <v-list-item
-                prepend-icon="mdi-frequently-asked-questions"
-                @click="e=>navigateEvent(e.target?.textContent)"
-                value="faq"
-                title="FAQ"/>
-            <v-list-item
-                prepend-icon="mdi-cog"
-                value="configuracoes"
-                @click="e=>navigateEvent(e.target?.textContent)"
-                title="Configurações"
-                />
+        <v-list @click:select="e => selection=(e.id as string)"> 
+            <v-list-item v-for="item in navItems" :key="item.prependIcon"
+                :title="item.title" :value="item.value" :prepend-icon="item.prependIcon"></v-list-item>
         </v-list>
     </v-navigation-drawer>
 </template>
 
 <script lang="ts">
-import { useNavigationHistory } from '@/stores/useNavigationHistory';
-import { useUserInfoStore } from '@/stores/userInfo';
 
 export default {
     name: 'NavDrawer',
@@ -69,9 +41,45 @@ export default {
         name: String,
         role: String
     },
+    watch:{
+        selection(nv, ov){
+            console.log(nv);
+            
+            if(nv !== ov) this.navigateEvent(nv);
+            else return;
+        }
+    },
     data() {
         return {
-            showDrawer: false as boolean
+            showDrawer: false as boolean,
+            selection: "" as string,
+            navItems: [
+                {
+                    title: "Eventos",
+                    value: "eventos",
+                    prependIcon: "mdi-calendar"
+                },
+                {
+                    title: "Contatos",
+                    value: "contatos",
+                    prependIcon: "mdi-card-account-mail"
+                },
+                {
+                    title: "Disciplinas",
+                    value: "disciplinas",
+                    prependIcon: "mdi-school"
+                },
+                {
+                    title: "FAQ",
+                    value: "faq",
+                    prependIcon: "mdi-frequently-asked-questions"
+                },
+                {
+                    title: "Configurações",
+                    value: "configuracoes",
+                    prependIcon: "mdi-cog"
+                },
+            ]
         }
     },
     methods:{
@@ -80,16 +88,14 @@ export default {
             return false
         },
         navigateEvent(value: string){
-
+            
             const fullBase = this.$route.path.split('/');
             
             if(fullBase.length > 4) fullBase.pop();
 
             const base = fullBase.join('/');
             
-            const normalizedValue = value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-            
-            this.$router.push({path: base+'/'+normalizedValue});
+            this.$router.push({path: base+'/'+value});
             
     },
 }
