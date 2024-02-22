@@ -2,6 +2,7 @@ import { isLoggedIn } from "@/firebase/authorization";
 import { admin_get_all, admin_get_one } from "@/https/admin";
 import type { User } from "firebase/auth";
 import { defineStore } from "pinia";
+import { el } from "vuetify/locale";
 
 export const useUserInfoStore = defineStore({
     id: "userInfo",
@@ -29,12 +30,13 @@ export const useUserInfoStore = defineStore({
                     })
                 }
             }).catch(e => {
-                console.log(e);
+                
                 this.UID = '';
                 this.name = '';
                 this.email = '';
                 this.displayName = '';
                 this.role = '';
+                throw e;
             })
         }
     }
