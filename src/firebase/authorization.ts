@@ -27,11 +27,11 @@ export async function login(email: string, password: string) : Promise<boolean>{
                 res(true);
             }).catch((error) => {
                 console.log(error);
-                res(false);
+                rej(false);
             })
         }).catch((error) => {
             console.log(error);
-            res(false);
+            rej(false);
         })
     })
 }
@@ -41,7 +41,7 @@ export async function isLoggedIn() : Promise<boolean | User>{
         a.onAuthStateChanged((user) => {
             if(user){
                 res(user as User);
-            } else {
+            }else{
                 rej(false);
             }
         })
