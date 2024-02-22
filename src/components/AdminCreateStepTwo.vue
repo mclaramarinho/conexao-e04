@@ -42,6 +42,7 @@ import { register, isLoggedIn } from '@/firebase/authorization';
 import { admin_create } from '@/https/admin';
 import { validateCode } from '@/https/code';
 import { useAccountCreationStore } from '@/stores/accountCreation';
+import { useUserInfoStore } from '@/stores/userInfo';
 import { notEmpty } from '@/utils/validations'
 import type { User } from 'firebase/auth';
 
@@ -125,7 +126,12 @@ export default{
                         console.log("created: "+created);
                         
                         if(!created) throw Error("Não foi possível criar sua conta no banco de dados."); // error message
-                        this.$router.push('/admin/retrieving-user-information')
+
+                        useUserInfoStore().update().then(r => {
+                            this.$router.push({name: 'admin-dashboard', params: {id: useUserInfoStore().UID as string}});
+                        }).catch(r => {
+                            throw new Error(r);
+                        })
                     }
                 }catch(e : any){
                     this.error = true;
