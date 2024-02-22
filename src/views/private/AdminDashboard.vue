@@ -22,7 +22,6 @@
 import type { IUser } from "@/interfaces/IUser";
 import {admin_get_one} from "../../https/admin"
 import NavDrawer from "@/components/smaller_components/NavDrawer.vue";
-import { useNavigationHistory } from "@/stores/useNavigationHistory";
 import DashBoard from "./DashBoard.vue";
 export default {
     name: 'AdminDashboard',
@@ -49,10 +48,11 @@ export default {
                     break;
                 case 3:
                     this.sectionTitle = "Contatos";
-                    this.tabs = []
+                    this.tabs = ["Contatos", "Criar"]
                     break;
                 case 4:
                     this.sectionTitle = "Disciplinas";
+                    this.tabs = ["Disciplinas", "Criar"]
                     break;
                 case 5:
                     this.sectionTitle = "FAQ";
@@ -62,14 +62,6 @@ export default {
                     break;
             }
         }
-    },
-    beforeRouteUpdate(to, from, next) {
-        useNavigationHistory().setPreviousRoute(this.$route.path);
-        next()
-    },
-    beforeRouteLeave(to, from, next) {
-        useNavigationHistory().setPreviousRoute(from.path);
-        next()
     },
     created() {
         admin_get_one().then(r => this.admin = r).catch(e => this.admin = {} as IUser)
