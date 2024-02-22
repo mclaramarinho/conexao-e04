@@ -6,37 +6,63 @@
 </template>
 
 <script lang="ts">
-import {isLoggedIn} from '@/firebase/authorization';
-import { useNavigationHistory } from '@/stores/useNavigationHistory';
 import { useUserInfoStore } from '@/stores/userInfo';
+import { setLogLevel } from 'firebase/app';
 
 export default {
     name: 'LoadingUserContent',
+    data(){
+        return {
+            allowedPaths: [
+                "/admin/login",
+                "/admin/create",
+                '/admin/dashboard',
+                '/admin/dashboard/events',
+                '/admin/dashboard/classes',
+                'admin/dashboard/contacts',
+                'admin/dashboard/faq',
+                'admin/dashboard/settings',
+            ]
+        }
+    },
 
     created() {
+        
         setTimeout(() => {
-            isLoggedIn().then(async (r) => {
-                if(r){
-                    if(useUserInfoStore().UID === "" || useUserInfoStore().UID === undefined || useUserInfoStore().UID === null){
-                        await useUserInfoStore().update();
-                    }
-                    console.log("Usuário logado");
+            console.log("got here");
+            
+            if(useUserInfoStore().UID === "" || useUserInfoStore().UID === undefined || useUserInfoStore().UID === null){
+                useUserInfoStore().update().then(() => {
                     this.chooseNext()
-                }
-            }).catch(err => {
-                this.$router.push("/admin/login")
-            })
+                }).catch(e => {
+                    this.$router.push({path: '/admin/login' as string})
+                });
+            }else{
+                this.chooseNext()
+            }
+            
         }, 2000);
     },
     methods:{
         chooseNext(){
-            const prev = useNavigationHistory().previous;
-            if((prev === "/admin/login" || prev === "/admin/create")){
-                const next = `/admin/dashboard/${useUserInfoStore().UID}`
+            const prev = this.$router.options.history.state.back || "";
+            const forward = this.$router.options.history.state.forward || "";
 
-                this.$router.push(next);
+            const qRedirect = this.$route.query.redirect || "";
+
+            
+            if((prev === "/admin/login" || prev === "/admin/create")){
+                console.log(1);
+                
+                this.$router.push({name: qRedirect as string, params: {id: useUserInfoStore().UID as string}});
+            }else if(prev === '/admin/retrieving-user-information'){
+                console.log(2);
+                this.$router.push({path: forward as string, params: {id: useUserInfoStore().UID as string}});
+                
             }else{
-                this.$router.push(prev)
+                console.log(3);
+
+                this.$router.push({name: qRedirect as string, params: {id: useUserInfoStore().UID as string}});
             }
         }
     }
