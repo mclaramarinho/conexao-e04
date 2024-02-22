@@ -52,8 +52,10 @@ import { password as pswdValidation, email as emailValidation } from '../utils/v
 import EmailField from '@/components/smaller_components/text-fields/EmailField.vue'
 import PswdField from '@/components/smaller_components/text-fields/PswdField.vue';
 import TextBtn from '@/components/smaller_components/buttons/TextBtn.vue';
-import { login } from '@/firebase/authorization';
+import { isLoggedIn, login } from '@/firebase/authorization';
 import { useNavigationHistory } from '@/stores/useNavigationHistory';
+import type { User } from 'firebase/auth';
+import { useUserInfoStore } from '@/stores/userInfo';
 export default {
     name: 'AdminLogin',
     components: { NavBar, EmailField, PswdField, TextBtn },
@@ -72,16 +74,11 @@ export default {
     },
     watch:{
         email(v: string, ov: string) {
-            console.log(v);
-            
             this.errorLogin = false
         },
         pswd(v: string, ov: string) {
             this.errorLogin = false
         }
-    },
-    beforeRouteLeave(){
-        useNavigationHistory().setPreviousRoute(this.$route.path);
     },
     methods: {
         handleLogin(e : any){
@@ -89,7 +86,11 @@ export default {
             console.log(this.email);
             
             login(this.email as string, this.pswd as string).then((res) => {
-                this.$router.push('/admin/retrieving-user-information');
+                useUserInfoStore().update().then(r => {
+                    this.$router.push({name: 'admin-dashboard', params: {id: useUserInfoStore().UID as string}});
+                }).catch(r => {
+                    throw new Error(r);
+                })
             }).catch((err) => {
                 this.errorLogin = true;
                 console.log(err);
