@@ -19,5 +19,12 @@ export const notEmpty = [
 ];
 
 export const maxChars = (max : number) => [
+    (v : string) => !!v || 'Campo obrigatório',
     (v : string) => v.length <= max || `Campo deve ter no máximo ${max} caracteres`,
 ];
+
+export const telephone = [
+    (v : string) => !!v || 'Telefone é obrigatório',
+    (v : string) => (/^[^A-Za-z]*[0-9]*[^A-Za-z]$/.test(v)) || 'Telefone deve conter apenas números',  
+    (v : string) => (v.length >= 11 && v.length <= 15) || 'Telefone deve seguir o modelo 81 9 1234-5678',
+]
