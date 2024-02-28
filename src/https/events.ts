@@ -1,8 +1,8 @@
 import { useUserInfoStore } from "@/stores/userInfo";
 import { BASE_URL, headers } from "./setup";
+import type { IHTTPResponse } from "./setup";
 
-
-interface IEvent {
+export interface IEvent {
     eventName: string;
     isMandatory: boolean;
     eventDescription: string;
@@ -14,11 +14,6 @@ interface IEvent {
     contactType: "phone" | "email";
 }
 
-interface IHTTPResponse {
-    data: RequestInit;
-    code: number;
-    response: any;
-}
 
 export async function createEvent(data : IEvent) : Promise<IHTTPResponse>{
     const res = {} as IHTTPResponse;
@@ -57,5 +52,3 @@ export async function createEvent(data : IEvent) : Promise<IHTTPResponse>{
     }
     
 }
-
-export type {IEvent}
