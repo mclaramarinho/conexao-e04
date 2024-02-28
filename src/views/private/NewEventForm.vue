@@ -1,7 +1,12 @@
 <template>
     <v-form validate-on="submit" ref="form">
         <v-row no-gutters>
-            <v-col cols="12" class="d-md-none"></v-col>
+            <v-col cols="12" class="d-block d-md-none mb-5">
+                <h3 class="mb-5">Preview</h3>
+                <event-preview-card :name="event.eventName" :is-mandatory="event.isMandatory" :start="event.eventStart" :end="event.eventEnd"
+                                            :organizer="(event.organizer as string)" :contact="(event.contact as string)" :location="(event.location as string)"
+                                            :contact-type="event.contactType"/>
+            </v-col>
             <v-col cols="12" md="6">
                 <v-row no-gutters>
                     <v-col cols="12" lg="8" class="mb-lg-5 mt-2 mb-0">
