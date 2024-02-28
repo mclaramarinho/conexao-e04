@@ -1,8 +1,9 @@
 import {BASE_URL, headers} from './setup';
 import { useAccountCreationStore } from '@/stores/accountCreation';
+import type { IHTTPResponse } from './setup';
 
-
-export async function validateCode() : Promise<any>{
+export async function validateCode() : Promise<IHTTPResponse>{
+    const res = {} as IHTTPResponse;
     try{
         const code = useAccountCreationStore().otp;
         const REQ_URL = `${BASE_URL}/code/validate`;
@@ -12,11 +13,17 @@ export async function validateCode() : Promise<any>{
             headers: headers,
             body: body
         } as RequestInit;
+        res.data = options;
+
         const req = await fetch(REQ_URL, options);
         const response = await req.json();
-        const res = {status: req.status, response: response};
+        
+        res.code = req.status;
+        res.response = response;
         return res;
     }catch(err){
-        return false;
+        res.code = 400;
+        res.response = err;
+        return res
     }
 }
