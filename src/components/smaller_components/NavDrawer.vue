@@ -8,10 +8,11 @@
         :touchless="!isMobile()"
         id="nav-drawer"
         :absolute="false"
-        :style="isMobile() && (showDrawer ? {transform:'translateY(0%)'} : {transform:'translateY(80%)'})"
+        
+        :style="isMobile() && (showDrawer ? {transform:'translateY(0%)'} : {transform:'translateY(85%)'})"
         permanent>
         <template v-slot:prepend v-if="isMobile()">
-            <div class="text-center py-3">
+            <div class="text-center py-2">
                 <v-icon 
                     :icon="showDrawer ? 'mdi-chevron-double-down' : 'mdi-chevron-double-up'"
                     color="var(--dark-blue)"
@@ -22,7 +23,7 @@
         <v-list>
             <v-list-item
                 prepend-icon="mdi-home" variant="text"
-                :title="name" :subtitle="email + ' - ' + role" />
+                :title="(name || 'carregando')" :subtitle="(email || '') + ' - ' + (role || '')" />
             <v-divider />
         </v-list>
         <v-list @click:select="e => selection=(e.id as string)"> 
