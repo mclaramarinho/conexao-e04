@@ -1,20 +1,16 @@
 <template>
-    <v-container fluid class="h-100 p-0">
+    <v-container style="height: 100vh;" fluid class="p-0 overflow-y-auto">
         
-        <v-row no-gutters class="h-100 w-100 m-0" >
+        <v-row no-gutters class="w-100 h-100 m-0" >
             <v-col cols="12" sm="1">
                 <nav-drawer 
                     :email="(admin.email as string)" :name="(admin.name as string)" :role="(admin.role as string)" />
             </v-col>
             <v-col cols="12" sm="11" class="h-100">
-                <v-container class="h-100">
-                    <v-row no-gutters class="h-100">
-                        <dash-board :title="sectionTitle" :tabs="tabs" />
-                    </v-row>
-                </v-container>
+                <dash-board :title="sectionTitle" :tabs="tabs" />
             </v-col>
                 
-        </v-row>
+        </v-row> 
     </v-container>
 </template>
 
@@ -23,6 +19,7 @@ import type { IUser } from "@/interfaces/IUser";
 import {admin_get_one} from "../../https/admin"
 import NavDrawer from "@/components/smaller_components/NavDrawer.vue";
 import DashBoard from "./DashBoard.vue";
+import { useDashboardHistory } from "@/stores/useNavigationHistory";
 export default {
     name: 'AdminDashboard',
     components: {
@@ -31,7 +28,7 @@ export default {
     data() {
         return {
             admin: {} as IUser,
-            currentView: 1 as number, // 1 to 5
+            currentView: useDashboardHistory().previous || 1 as number, // 1 to 5
             sectionTitle: "" as string,
             tabs: [] as Array<string>
         }
