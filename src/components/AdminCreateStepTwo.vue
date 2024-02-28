@@ -29,7 +29,7 @@
                 <v-btn
                     size="large" text="Desisti! Quero voltar..."
                     color="var(--dark-blue)" variant="text"
-                    @click="e => $router.push('/admin/login')"
+                    @click="(e : HTMLInputElement) => $router.push('/admin/login')"
                     class="mx-auto w-fit"/>
             </v-row>
         </v-col>
@@ -92,10 +92,10 @@ export default{
                 try{
                     //validate otp
                     const otp_validation = await validateCode();
-                    console.log("otp_validation: "+otp_validation.status);
                     
-                    if(otp_validation.status===403) throw Error("O código não é válido"); //error message
-
+                    if(otp_validation.code===403) throw Error("O código não é válido"); //error message
+                    if(otp_validation.code===400) throw Error("Ocorreu um erro interno na requisição"); //error message
+                    
                     //set user pinia data
                     user_store.setRole(otp_validation.response.role);
 
@@ -127,6 +127,7 @@ export default{
                         
                         if(!created) throw Error("Não foi possível criar sua conta no banco de dados."); // error message
 
+                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
                         useUserInfoStore().update().then(r => {
                             this.$router.push({name: 'admin-dashboard', params: {id: useUserInfoStore().UID as string}});
                         }).catch(r => {
