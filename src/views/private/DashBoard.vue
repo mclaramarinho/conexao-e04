@@ -1,6 +1,7 @@
 <template>
-    <v-container class="h-100 font-blue">
-        <v-row no-gutters class="h-100" align-content="start">
+   
+    <v-container class="font-blue position-relative h-100" style="">
+        <v-row no-gutters class="" align-content="start">
             <v-col cols="12" class="mb-2">
                 <v-col cols="12">
                     <h1 class="">{{ title as string }}</h1>
@@ -13,18 +14,32 @@
                             {{ item }}
                         </v-tab>
                     </v-tabs>
-                    <v-tabs v-else>
-                        <v-tab>{{ title as string }}</v-tab>
-                    </v-tabs>
+                    <v-tabs v-else v-model="currentTab">
+                        <v-tab :key="((currentTab as unknown) as number)" :value="title">{{ title as string }}</v-tab>
+                    </v-tabs> 
                 </v-col>
             </v-col>
           
             <v-col cols="12">
                 <v-container fluid>
-                    <v-row no-gutters>
-                            <v-window v-model="currentTab">
-                                <v-window-item value="Criar" v-if="title === 'Eventos'">
-                                    <new-event-form  />
+                    <v-row no-gutters class="">
+
+                            <v-window v-model="currentTab" class="w-100">
+                               
+                                <v-window-item value="Criar">
+                                    <new-event-form v-if="title==='Eventos'" />
+                                    <new-contact-form v-if="title==='Contatos'" />
+                                    <new-class-form v-if="title==='Disciplinas'" />
+                                </v-window-item>
+
+                                <v-window-item value="Eventos">
+                                    Lista de eventos ordenado de acordo com a data
+                                </v-window-item>
+                                <v-window-item :value="title">
+                                    <contact-view v-if="title==='Contatos'" />
+                                    <faq-view v-if="title==='FAQ'" />
+                                    // vif value="Eventos"
+                                    // vif value="Disciplinas"
                                 </v-window-item>
                             </v-window>
                     </v-row>
@@ -36,10 +51,14 @@
 
 <script lang="ts">
 import NewEventForm from './NewEventForm.vue';
+import NewContactForm from './NewContactForm.vue';
+import NewClassForm from './NewClassForm.vue';
+import FaqView from '@/views/private/FaqView.vue';
+import ContactView from '@/views/private/ContactView.vue';
 export default {
     name: 'dash-board',
     components: {
-        NewEventForm
+        NewEventForm, NewContactForm, NewClassForm, FaqView, ContactView
     },
     data(){
         return {
@@ -50,10 +69,7 @@ export default {
         title: String,
         tabs: {type: Array<string>, default: [] as Array<string>}
     },
-
     created(){
-        console.log(this.title);
-        
     },
     methods:{
         
