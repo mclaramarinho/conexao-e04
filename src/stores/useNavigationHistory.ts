@@ -1,17 +1,13 @@
 import { defineStore } from "pinia";
 
-export const useNavigationHistory = defineStore({
+export const useDashboardHistory = defineStore({
   id: "navigationHistory",
   state: () => ({
     previous: "",
-    next: "",
   }),
   actions: {
-    setPreviousRoute(path: string) {
+    setPreviousView(path: string) {
       this.previous = path;
-    },
-    setNextRoute(path: string) {
-      this.next = path;
-    },
+    }
   },
 });
