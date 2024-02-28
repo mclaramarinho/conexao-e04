@@ -1,5 +1,5 @@
 import { isLoggedIn } from "@/firebase/authorization";
-import { BASE_URL, headers } from "./setup";
+import { BASE_URL, headers, type IHTTPResponse } from "./setup";
 import type { User } from "firebase/auth";
 import {UserPUT} from "@/models/UserPUT";
 import type { IUser } from "@/interfaces/IUser";
@@ -50,7 +50,6 @@ export async function admin_get_one() : Promise<IUser>{
     }catch(e : any){
         throw new Error(e.message);
     }
-    
 }
 
 /**
@@ -58,9 +57,9 @@ export async function admin_get_one() : Promise<IUser>{
  * @returns 
  */
 
-export async function admin_update(data : UserPUT) : Promise<any>{
+export async function admin_update(data : UserPUT) : Promise<IHTTPResponse>{
     let REQ_URL = `${BASE_URL}/admin/update/`;
-    
+    const res = {} as IHTTPResponse;
     try{
         const uid = await getUserId();
         
@@ -74,9 +73,12 @@ export async function admin_update(data : UserPUT) : Promise<any>{
             headers: headers,
             body: body,
         } as RequestInit;
+        res.data = options;
 
         const req = await fetch(REQ_URL, options);
-        const res = await req.json();
+        const resbody = await req.json();
+        res.code = req.status;
+        res.response = resbody;
         return res;
     }catch(e : any){
         throw new Error(e.message);
