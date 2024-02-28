@@ -4,7 +4,7 @@
         :text="text"
         variant="text"
         :color="color"
-        :class="'mx-auto w-fit ' + classes"
+        :class="center && 'mx-auto ' + 'w-fit ' + classes"
         @click="() => $emit('clicked', value)" />
 </template>
 
@@ -29,6 +29,11 @@ export default {
         classes:{
             type: String,
             default: "",
+            required: false
+        },
+        center:{
+            type: Boolean,
+            default: true,
             required: false
         },
         value:{
