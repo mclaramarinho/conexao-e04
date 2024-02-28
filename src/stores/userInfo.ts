@@ -30,7 +30,6 @@ export const useUserInfoStore = defineStore({
                     })
                 }
             }).catch(e => {
-                
                 this.UID = '';
                 this.name = '';
                 this.email = '';
