@@ -1,5 +1,5 @@
 <template>
-    <v-form validate-on="submit" ref="form">
+    <v-form validate-on="submit" ref="form" :style="style">
         <v-row no-gutters>
             <v-col cols="12" class="d-block d-md-none mb-5">
                 <h3 class="mb-5">Preview</h3>
@@ -87,16 +87,12 @@
                                             :contact-type="event.contactType"/>
                     </v-col>
                 </v-row>
-                
-                <v-row no-gutters class="mt-5">
-                    <v-col cols="12">
-                        <p class="font-red text-center font-12" v-if="showError">{{ errorMessage }}</p>
-                    </v-col>
-                    
-                    <text-btn text="Salvar" variant="outlined" @click="e => handleEventCreation()" />
-                </v-row>
             </v-col>
             
+            <v-col cols="12" align-self="end" align="end">
+                <p class="font-red text-center font-12" v-if="showError">{{ errorMessage }}</p>
+                <text-btn text="Salvar" variant="outlined" @click="e => handleEventCreation()" />
+            </v-col>
         </v-row>
     </v-form>
 </template>
@@ -107,6 +103,7 @@ import TextBtn from '@/components/smaller_components/buttons/TextBtn.vue';
 import { createEvent } from '@/https/events'
 import {maxChars, telephone, email, notEmpty} from '@/utils/validations'
 import type {IEvent} from '@/https/events'
+import type { StyleValue } from 'vue';
 export default {
     name: 'new-event-form',
     components: {
@@ -131,13 +128,19 @@ export default {
             email: email,
             notEmpty: notEmpty,
             errorMessage: null as null | string,
-            showError: false as boolean
+            showError: false as boolean,
+            style: {} as StyleValue
+        }
+    },
+    created() {
+        this.style = {
+            maxHeight: this.$vuetify.display.platform.android || this.$vuetify.display.platform.ios  ? '65vh' : '80vh',
+            overflowY: 'auto',
+            display: 'block'
         }
     },
     mounted(){
         document.getElementsByName('eventEnd')[0].setAttribute('min', new Date().toISOString().split('T')[0] + 'T00:00');
-        // document.getElementsByName('eventStart')[0].setAttribute('max', new Date().toISOString().split('T')[0] + 'T23:59');
-        
     },
     methods:{
         async handleEventCreation(){
