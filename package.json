@@ -13,6 +13,10 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@schedule-x/event-modal": "^1.19.0",
+    "@schedule-x/shared": "^1.19.0",
+    "@schedule-x/theme-default": "^1.19.0",
+    "@schedule-x/vue": "^1.15.0",
     "firebase": "^10.8.0",
     "maska": "^2.1.11",
     "pinia": "^2.1.7",
