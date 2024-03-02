@@ -30,7 +30,7 @@ export default {
                 this.chooseNext()
             }
             
-        }, 2000);
+        }, 1000);
     },
     methods:{
         chooseNext(){
