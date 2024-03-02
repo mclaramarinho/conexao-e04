@@ -28,10 +28,11 @@
 </template>
 
 <script lang="ts">
+import { createFAQ, updateFAQ, type IFaq } from '@/https/faqs';
 export default {
     name: 'faq-add-edit',
     props: {
-        variant: () => "edit" || "add",
+        variant: String as () => "edit" | "add",
         item: {
             type: Object as () => {id: string, question: string, answer: string },
             required: false
@@ -40,7 +41,6 @@ export default {
     data(){
         return {
             title: this.variant === "edit" ? "Editar FAQ" : "Adicionar FAQ",
-            newName: this.name,
             dialog: false,
             question: this.item?.question || "",
             answer: this.item?.answer || ""
@@ -48,25 +48,59 @@ export default {
     },
     methods:{
         saveFAQ(){
-            // Check if it's a create or edit form
+            // If edit, create a new item with the create method
+            this.variant === 'edit' && this.editFAQ();
 
-            // If create, create a new item with the create method
-
-            // If edit, update the item with the update method
+            // If create, update the item with the update method
+            this.variant === 'add' && this.createNewFAQ();
         },
 
         createNewFAQ(){
-            // Call the http create method to create a new faq item
-            // on success, show a success message
-            // on failure, show an error message
+
+            if(!this.question || !this.answer){
+                //error message
+                return;
+            }
+            const data = {
+                question: this.question,
+                answer: this.answer
+            } as IFaq;
+
+            createFAQ(data).then(r => {
+                // on success, show a success message
+                this.$emit("done", r)
+            }).catch(e => {
+                // on failure, show an error message
+                console.log(e)
+            })
+            
+           
         },
 
         editFAQ(){
             // Call the http update method to update the faq item
-            // on success, show a success message
-            // on failure, show an error message
+            if(!this.question || !this.answer){
+                //error message
+                return;
+            }
+            const data = {
+                question: this.question,
+                answer: this.answer
+            } as IFaq;
+
+            updateFAQ(data, this.item?._id as string)
+            .then(r =>{
+                // on success, show a success message
+                this.$emit("done", r)
+            })
+            .catch(e => {
+                // on failure, show an error message
+                console.log(e)
+            })
+            
+            
         }
     },
-    emits: ['cancel']
+    emits: ['cancel', 'done']
 }
 </script>
