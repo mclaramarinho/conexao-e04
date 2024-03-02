@@ -1,16 +1,37 @@
 <template>
-    <multiuse-data-table :headers="headers" :table-items="tabelaitems"
-            item-value="email" refresh-button
+    <multiuse-data-table :headers="headers" :table-items="tabelaitems" custom-slot-key="when_to_contact"
+            item-value="email" refresh-button :loading="loading"
             @update="refreshContacts" 
-            expandable expandable-item-key="when_to_contact"
+            expandable expandable-item-key="when_to_contact" custom-expanded-row-element
             show-expandable-item-actions :expandable-item-actions="tableActions"
-            @delete="e => handleDeleteDialog(e)" @edit="(e) => handleEditDialog(e)"  />
+            @delete="e => handleDeleteDialog(e)" @edit="(e) => handleEditDialog(e)">
+
+        <template v-slot:expandedRowEl="{cols, item}">
+            
+                <tr>
+                    <td :colspan="cols.length">
+                        <v-table class="font-12 font-blue">
+                            <thead>
+                                <tr>
+                                    <th>Quando contatar?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{{ item.when_to_contact }}</td>
+                                </tr>
+                            </tbody>
+                        </v-table>
+                    </td>
+                </tr>
+        </template>
+    </multiuse-data-table>
 
     <v-dialog v-model="dialogDelete" max-width="500px">
         <dialog-delete-item @delete-item-confirm="delContact" @close-delete="dialogDelete = false" />
     </v-dialog>
     <v-dialog v-model="dialogEdit" max-width="500px">
-        <contact-edit :item="selectedItem" @cancel="dialogEdit = false" @done="e => dialogEdit = false" />
+        <contact-edit :item="selectedItem" @cancel="dialogEdit = false" @done="e => {dialogEdit = false; refreshContacts()}" />
     </v-dialog>
 </template>
 
@@ -27,6 +48,7 @@ export default {
     },
     data(){
         return{
+            loading: false as boolean,
             dialogEdit: false as boolean,
             dialogDelete: false as boolean,
             useContactsList: [] as any,
@@ -77,10 +99,14 @@ export default {
             this.selectedItem = item
         },
         async refreshContacts(){
+            this.loading = true;
             await getContacts().then(r => this.tabelaitems = r.response)
+            this.loading = false;
         },
         async delContact(){
             await deleteContact(this.selectedItem._id)
+            
+            this.dialogDelete = false;
             this.refreshContacts()
         },
     }
