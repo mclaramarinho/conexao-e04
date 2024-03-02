@@ -52,3 +52,101 @@ export async function createEvent(data : IEvent) : Promise<IHTTPResponse>{
     }
     
 }
+
+
+export async function getAllEvents() : Promise<IHTTPResponse>{
+    const serviceURL = `${BASE_URL}/events/all`
+    const res = {} as IHTTPResponse;
+    const options = {
+        method: 'GET',
+        headers: headers,
+    } as RequestInit;
+    res.data = options;
+
+    try{
+        const req = await fetch(serviceURL, options);
+        const resBody = await req.json();
+        res.code = req.status;
+        res.response = resBody;
+        return res
+    }catch(err){
+        res.code = 400;
+        res.response = err;
+        return res
+    }
+}
+
+export async function getEvent(id : string) : Promise<IHTTPResponse>{
+    const serviceURL = `${BASE_URL}/events/get/${id}`
+    const res = {} as IHTTPResponse;
+    const options = {
+        method: 'GET',
+        headers: headers
+    } as RequestInit;
+    res.data = options;
+
+    try{
+        const req = await fetch(serviceURL, options);
+        const resBody = await req.json();
+        res.code = req.status;
+        res.response = resBody;
+        return res
+    }catch(err){
+        res.code = 400;
+        res.response = err;
+        return res
+    }
+}
+export async function deleteEvent(id : string) : Promise<IHTTPResponse>{
+    const serviceURL = `${BASE_URL}/events/delete/${id}`
+    const res = {} as IHTTPResponse;
+    const options = {
+        method: 'DELETE',
+        headers: headers
+    } as RequestInit;
+    res.data = options;
+
+    try{
+        const req = await fetch(serviceURL, options);
+        res.code = req.status;
+        res.response = {};
+        return res
+    }catch(err){
+        res.code = 400;
+        res.response = err;
+        return res
+    }
+}
+export async function updateEvent(data : IEvent, id : string) : Promise<IHTTPResponse>{
+    const serviceURL = `${BASE_URL}/events/update/${id}`
+    const res = {} as IHTTPResponse;
+    const body = {
+        start_timestamp: data.eventStart,
+        end_timestamp: data.eventEnd,
+        event_name: data.eventName,
+        description: data.eventDescription,
+        organizer: data.organizer,
+        event_location: data.location,
+        event_contact_main: data.contact,
+        is_mandatory: data.isMandatory.toString(),
+        last_edited_by: useUserInfoStore().UID,
+    };
+    const options = {
+        method: 'PUT',
+        headers: headers,
+        body: JSON.stringify(body)
+    } as RequestInit;
+    res.data = options;
+
+    try{
+        const req = await fetch(serviceURL, options);
+        const resBody = await req.json();
+        res.code = req.status;
+        res.response = resBody;
+        return res
+    }catch(err){
+        res.code = 400;
+        res.response = err;
+        return res
+    }
+}
