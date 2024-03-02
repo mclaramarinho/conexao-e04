@@ -32,14 +32,11 @@
                                     <new-class-form v-if="title==='Disciplinas'" />
                                 </v-window-item>
 
-                                <v-window-item value="Eventos">
-                                    Lista de eventos ordenado de acordo com a data
-                                </v-window-item>
                                 <v-window-item :value="title">
                                     <contact-view v-if="title==='Contatos'" />
                                     <faq-view v-if="title==='FAQ'" />
-                                    // vif value="Eventos"
-                                    // vif value="Disciplinas"
+                                    <classes-view v-if="title==='Disciplinas'" />
+                                    <events-view v-if="title==='Eventos'"></events-view>
                                 </v-window-item>
                             </v-window>
                     </v-row>
@@ -55,10 +52,12 @@ import NewContactForm from './NewContactForm.vue';
 import NewClassForm from './NewClassForm.vue';
 import FaqView from '@/views/private/FaqView.vue';
 import ContactView from '@/views/private/ContactView.vue';
+import ClassesView from './ClassesView.vue';
+import EventsView from './EventsView.vue';
 export default {
     name: 'dash-board',
     components: {
-        NewEventForm, NewContactForm, NewClassForm, FaqView, ContactView
+        NewEventForm, NewContactForm, NewClassForm, FaqView, ContactView, ClassesView, EventsView
     },
     data(){
         return {
