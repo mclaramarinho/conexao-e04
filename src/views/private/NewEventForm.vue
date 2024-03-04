@@ -134,7 +134,6 @@ export default {
     },
     created() {
         this.style = {
-            maxHeight: this.$vuetify.display.platform.android || this.$vuetify.display.platform.ios  ? '65vh' : '80vh',
             overflowY: 'auto',
             display: 'block'
         }
