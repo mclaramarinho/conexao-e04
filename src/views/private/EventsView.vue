@@ -1,6 +1,6 @@
 <template>
     
-    <v-container fluid v-if="$vuetify.display.mdAndUp">
+    <v-container fluid>
         <v-row no-gutters justify="end">
             <v-btn icon="mdi-refresh" @click="fetchEvents" class="font-12" />
         </v-row>
@@ -54,7 +54,7 @@ export default {
             this.render = false;
             const res = await getAllEvents();
             let events = [] as Array<any>;
-            const view = this.$vuetify.display.mdAndUp ? viewMonthGrid : viewWeek;
+            const view = this.$vuetify.display.mdAndUp ? viewMonthGrid : viewMonthAgenda;
             events = await new Promise((resolve) => {
                 if (res.code === 200) {
                     const data = res.response;
@@ -101,6 +101,9 @@ export default {
                     onEventClick(e){
                         useEventSelectedStore().setSelectedEvent(e)
                     },
+                    onRangeUpdate(range) {
+                        console.log(range)
+                    },
                 }
             });
             this.render=true;
@@ -115,37 +118,57 @@ export default {
   width: 100%;
   height: 65vh;
 }
-.sx__chevron-wrapper:hover{
+.sx__chevron {
+    border-color: var(--dark-blue) !important;
+}
+
+.sx__chevron-wrapper:hover, .sx__chevron-wrapper:active{
     background-color: var(--faded-dark-blue);
     >i{
         border-color: white !important;  
     }
 }
-.sx__chevron {
-    border-color: var(--dark-blue) !important;
+
+.sx__calendar-header, .sx__month-grid-day__header-day-name, .sx__month-grid-day__header-date,
+.sx__today-button, .sx__view-selection-item, .sx__month-agenda-day, .sx__month-agenda-events__empty,
+.sx__date-input-wrapper, .sx__date-input-label, .sx__date-input, .sx__date-picker__day:not(.sx__date-picker__day--selected),
+.sx__date-picker__month-view-header__month-year{
+    color: var(--dark-blue) !important;
 }
-.sx__calendar-header, .sx__month-grid-day__header-day-name, .sx__month-grid-day__header-date{
-  color: var(--dark-blue);
+.sx__month-agenda-events__empty{
+    font-weight: bold;
 }
 
-.sx__month-grid-day__header-date.sx__is-today{
-    background-color: var(--dark-blue) !important;
+.sx__month-agenda-day--active{
+    box-shadow:inset 0 0 0 2px var(--dark-blue);
 }
-.sx__today-button{
-  color: var(--dark-blue);
+
+.sx__calendar-header{
+    text-align: center;
+    justify-content: space-between;
 }
-.sx__month-grid-event{
-    cursor: pointer;
+
+.sx__month-grid-day__header-date.sx__is-today, .sx__view-selection-item:hover, .sx__date-picker__day--selected{
+    background-color: var(--dark-blue);
 }
-.sx__date-picker-wrapper{
-    display: none;
+.sx__month-grid-event{cursor: pointer;}
+
+@media (min-width: 530px){
+   .sx__date-picker-wrapper, .sx__calendar-header-content:nth-child(2), .sx__view-selection{
+        display: none;
+    } 
 }
-.sx__view-selection-item{
+
+.sx__view-selection-item, .sx__date-picker__day--today{
     background-color: var(--faded-dark-blue);
-    color: var(--dark-blue);
 }
-.sx__view-selection-item:hover{
-    background-color: var(--dark-blue) !important;
+
+.sx__view-selection-item:hover, .sx__date-picker__day--selected{
     color: var(--white);
 }
+
+.sx__view-selection{display: none;}
+
+
+
 </style>
