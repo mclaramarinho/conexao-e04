@@ -129,7 +129,7 @@ export default{
 
                         // eslint-disable-next-line @typescript-eslint/no-unused-vars
                         useUserInfoStore().update().then(r => {
-                            this.$router.push({name: 'admin-dashboard', params: {id: useUserInfoStore().UID as string}});
+                            this.$router.push({name: 'admin-events', params: {id: useUserInfoStore().UID as string}});
                         }).catch(r => {
                             throw new Error(r);
                         })

@@ -87,7 +87,7 @@ export default {
             
             login(this.email as string, this.pswd as string).then((res) => {
                 useUserInfoStore().update().then(r => {
-                    this.$router.push({name: 'admin-dashboard', params: {id: useUserInfoStore().UID as string}});
+                    this.$router.push({name: 'admin-events', params: {id: useUserInfoStore().UID as string}});
                 }).catch(r => {
                     throw new Error(r);
                 })
