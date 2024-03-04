@@ -1,25 +1,23 @@
 <template>
     
     <v-navigation-drawer  
-        :location="isMobile() ? 'bottom' : 'start'"
-        :expand-on-hover="!isMobile()"
-        :rail="!isMobile()"
-        mobile-breakpoint="xs" 
-        :touchless="!isMobile()"
-        id="nav-drawer"
-        :absolute="false"
-        
-        :style="isMobile() && (showDrawer ? {transform:'translateY(0%)'} : {transform:'translateY(85%)'})"
+        :location="$vuetify.display.smAndDown ? 'top' : 'start'"
+        :expand-on-hover="!$vuetify.display.smAndDown"
+        :rail="!$vuetify.display.smAndDown"
+        :class="$vuetify.display.smAndDown && 'mt-5'"
+        :style="$vuetify.display.smAndDown && (showDrawer ? {transform:'translateY(0%)'} : {transform:'translateY(-90%)'})"
         permanent>
-        <template v-slot:prepend v-if="isMobile()">
+        
+        <template v-slot:append v-if="$vuetify.display.smAndDown">
             <div class="text-center py-2">
                 <v-icon 
-                    :icon="showDrawer ? 'mdi-chevron-double-down' : 'mdi-chevron-double-up'"
+                    :icon="showDrawer ? 'mdi-chevron-double-up' : 'mdi-chevron-double-down'"
                     color="var(--dark-blue)"
                     :onmouseup="e => showDrawer = !showDrawer"
-                    class="d-md-none btn" size="30" />
+                    class="btn" size="30" />
             </div>
         </template>
+
         <v-list>
             <v-list-item
                 prepend-icon="mdi-home" variant="text"
