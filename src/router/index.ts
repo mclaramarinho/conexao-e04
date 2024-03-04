@@ -1,8 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import PublicView from '../views/PublicView.vue'
 import { isLoggedIn } from '@/firebase/authorization'
-import { useUserInfoStore } from '@/stores/userInfo'
-import type { User } from 'firebase/auth'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -39,7 +37,7 @@ const router = createRouter({
       beforeEnter: (to, from, next) => {
         isLoggedIn().then(res => {
           if(res){
-            next({name: 'retrieving-user-information', query: {redirect: 'admin-dashboard'}})
+            next({name: 'retrieving-user-information', query: {redirect: 'admin-events'}})
             return;
           }
         }).catch(err => {
@@ -55,7 +53,7 @@ const router = createRouter({
       beforeEnter: (to, from, next) => {
         isLoggedIn().then(res => {
           if(res){
-            next({name: 'retrieving-user-information', query: {redirect: 'admin-dashboard'}})
+            next({name: 'retrieving-user-information', query: {redirect: 'admin-events'}})
             return;
           }
         }).catch(err => {
@@ -74,38 +72,37 @@ const router = createRouter({
     {
       path: '/admin/dashboard/:id',
       name: 'admin-dashboard',
-      meta: {requiresAuth: true, avoid: false},
-      component: () => import('../views/private/AdminDashboard.vue'),
+      meta: {requiresAuth: true},
       children: [
         {
           path: '/admin/dashboard/:id/eventos',
           name: 'admin-events',
-          meta: {requiresAuth: true, avoid: false},
+          meta: {requiresAuth: true},
           component: () => import('../views/private/AdminDashboard.vue')
         },
         {
           path: '/admin/dashboard/:id/disciplinas',
           name: 'admin-classes',
-          meta: {requiresAuth: true, avoid: false},
+          meta: {requiresAuth: true},
           component: () => import('../views/private/AdminDashboard.vue')
         },
         {
           path: '/admin/dashboard/:id/contatos',
           name: 'admin-important-contacts',
-          meta: {requiresAuth: true, avoid: false},
+          meta: {requiresAuth: true},
           component: () => import('../views/private/AdminDashboard.vue')
         },
         {
           path: '/admin/dashboard/:id/faq',
           name: 'admin-faq',
-          meta: {requiresAuth: true, avoid: false},
+          meta: {requiresAuth: true},
           component: () => import('../views/private/AdminDashboard.vue')
         },
         {
           path: '/admin/dashboard/:id/configuracoes',
           name: 'admin-settings',
-          meta: {requiresAuth: true, avoid: false},
-          component: () => import('../views/private/AdminDashboard.vue')
+          meta: {requiresAuth: true},
+          component: () => import('../views/private/AdminDashboard.vue')  
         }
       ]
     }
@@ -115,9 +112,6 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
 
   if(to.meta.requiresAuth){
-    console.log(to.name);
-    console.log(from.name);
-
     if(from.name === undefined){
       next({path: '/admin/retrieving-user-information', query: {redirect: to.name}})
     }else if(from.name !== 'retrieving-user-information'){
