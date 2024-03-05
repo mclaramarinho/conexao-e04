@@ -9,54 +9,54 @@
                     <v-col cols="12">
                         <v-text-field variant="outlined" label="Disciplina" 
                                 :model-value="name"
-                                @input="e => name = e.target.value">
+                                @input="(e : any) => name = e.target.value">
                         </v-text-field>
                     </v-col>
                     <v-col cols="12">
                         <v-text-field variant="outlined" label="Professor" 
                                 :model-value="teacher"
-                                @input="e => teacher = e.target.value">
+                                @input="(e : any) => teacher = e.target.value">
                         </v-text-field>
                     </v-col>
                     <v-col cols="12">
                         <v-text-field variant="outlined" label="Sala" 
                                 :model-value="classroom"
-                                @input="e => classroom = e.target.value">
+                                @input="(e : any) => classroom = e.target.value">
                         </v-text-field>
                     </v-col>
                     <v-col cols="12">
                         <v-text-field variant="outlined" label="Prova 1" 
                                 type="datetime-local"
                                 :model-value="exam1Date"
-                                @input="e => exam1Date = e.target.value">
+                                @input="(e : any) => exam1Date = e.target.value">
                         </v-text-field>
                     </v-col>
                     <v-col cols="12">
                         <v-text-field variant="outlined" label="Prova 2" 
                                 type="datetime-local"
                                 :model-value="exam2Date"
-                                @input="e => exam2Date = e.target.value">
+                                @input="(e : any) => exam2Date = e.target.value">
                         </v-text-field>
                     </v-col>
                     <v-col cols="12">
                         <v-text-field variant="outlined" label="Segunda Chamada"
                                 type="datetime-local"
                                 :model-value="retakeExamDate"
-                                @input="e => retakeExamDate = e.target.value">
+                                @input="(e : any) => retakeExamDate = e.target.value">
                         </v-text-field>
                     </v-col>
                     <v-col cols="12">
                         <v-text-field variant="outlined" label="Prova Final" 
                                 type="datetime-local"
                                 :model-value="finalExamDate"
-                                @input="e => finalExamDate = e.target.value">
+                                @input="(e : any) => finalExamDate = e.target.value">
                         </v-text-field>
                     </v-col>
                 </v-row>
                 <v-row>
                     <v-col cols="12">
                         <v-textarea variant="outlined" label="Observações" 
-                                :model-value="observations" @input="e => observations = e.target.value" />
+                                :model-value="observations" @input="(e : any) => observations = e.target.value" />
                     </v-col>
                 </v-row>
             </v-container>
@@ -65,17 +65,14 @@
             <v-spacer></v-spacer>
             <v-btn color="var(--black)" size="large" class="font-12" variant="tonal" @click="$emit('cancel')">Cancel</v-btn>
             <v-spacer></v-spacer>
-            <v-btn color="var(--green)" size="large" class="font-12" variant="tonal" @click="editClass  ">Salvar</v-btn>
+            <v-btn color="var(--green)" size="large" class="font-12" variant="tonal" @click="editClass">Salvar</v-btn>
             <v-spacer></v-spacer>
         </v-card-actions>
     </v-card>
 </template>
 
 <script lang="ts">
-import { updateContact } from '@/https/contacts';
-import type { IContact } from '@/https/contacts';
 import type { IClass } from '@/https/classes';
-import type IClassesView from '@/interfaces/IClassesView';
 import { getClass, updateClass } from '@/https/classes';
 export default {
     name: 'class-edit',
@@ -101,11 +98,7 @@ export default {
         }
     },
     created(){
-        console.log(this.id);
-        
         this.fetchClass()
-
-
     },
     methods:{
         fetchClass(){
@@ -137,31 +130,38 @@ export default {
             const finalExamDate = this.finalExamDate;
             const observations = this.observations;
             if(!name || !teacher || !classroom || !exam1Date || !exam2Date || !retakeExamDate || !finalExamDate){
-                // Show an error message
+                // TODO - Show an error message
                 return;
             }
             
             // Call the http update method to update the faq item
-            const data = {} as IClass;
-            data.name = name;
-            data.teacher = teacher;
-            data.classroom = classroom;
-            data.exam1Date = exam1Date;
-            data.exam2Date = exam2Date;
-            data.retakeExamDate = retakeExamDate;
-            data.finalExamDate = finalExamDate;
-            data.observations = observations || null;
-            data.endTime = this.endTime;
-            data.days = this.days;
-            data.startTime = this.startTime;
-
+            const data = {
+                name: name,
+                teacher: teacher,
+                classroom: classroom,
+                exam1Date: exam1Date,
+                exam2Date: exam2Date,
+                retakeExamDate: retakeExamDate,
+                finalExamDate: finalExamDate,
+                observations: observations || null,
+                endTime: this.endTime,
+                days: this.days,
+                startTime: this.startTime
+            } as IClass;
 
             updateClass(data, this.id)
-            .then(r => {this.$emit("done", r); console.log(r);})
-            .catch(e => console.error(e));
+            .then(r => {
+                this.$emit("done", r);
+                console.log(r);
+                // TODO - on success, show a success message
+            })
+            .catch(e => {
+                console.error(e)
+                // TODO - on failure, show an error message
+            });
             
-            // on success, show a success message
-            // on failure, show an error message
+            
+            
         }
     },
     emits: ['cancel', 'done']
