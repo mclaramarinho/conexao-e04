@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 
 export const useDashboardHistory = defineStore({
-  id: "navigationHistory",
+  id: "dashboardHistory",
   state: () => ({
     previous: "",
   }),
