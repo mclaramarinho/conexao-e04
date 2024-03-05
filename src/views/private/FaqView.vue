@@ -39,6 +39,7 @@ export default {
     dialogDelete: false,
     loading: false,
     dialogEdit: false,
+    // TODO - Use an interface for selectedItem
     selectedItem: {} as {id: string, question: string, answer: string},
     headers: [
       {
@@ -63,18 +64,18 @@ export default {
         this.loading = true;
         const res = await getAllFAQs();
         if(res.code === 200){
-            console.log(res)
             this.faqs = res.response;
         }else{
-            console.log(res)
+            // TODO - Show error message
         }
         this.loading = false;
     },
+    // TODO - Set a type for item
     editItem(item) {
         this.selectedItem = item
         this.dialogEdit = true;
     },
-
+    // TODO - Set a type for item
     deleteItem(item) {       
         this.selectedItem = item
         this.dialogDelete = true

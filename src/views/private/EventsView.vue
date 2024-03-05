@@ -1,10 +1,11 @@
 <template>
-    
+    <!-- TODO - Create a separate component for the calendar -->
     <v-container fluid>
         <v-row no-gutters justify="end">
             <v-btn icon="mdi-refresh" @click="fetchEvents" class="font-12" />
         </v-row>
     </v-container>
+
     <ScheduleXCalendar v-if="render" :calendar-app="(app as CalendarApp)">
     </ScheduleXCalendar>
     
@@ -17,7 +18,7 @@
 import { getAllEvents } from '@/https/events';
 import {ScheduleXCalendar} from '@schedule-x/vue'
 import {CalendarApp} from '@schedule-x/calendar'
-import {createCalendar, viewMonthGrid, viewMonthAgenda, viewWeek} from '@schedule-x/calendar'
+import {createCalendar, viewMonthGrid, viewMonthAgenda} from '@schedule-x/calendar'
 import { useEventSelectedStore } from '@/stores/eventSelectedStore';
 import '@schedule-x/theme-default/dist/index.css'
 import { storeToRefs } from 'pinia';
@@ -40,7 +41,7 @@ export default {
         await this.fetchEvents()
     },
     watch:{
-        eventSelectedStore(nv){
+        eventSelectedStore(){
             this.openDialog = true;
         }
     },
@@ -77,6 +78,7 @@ export default {
                 datePicker: {
                     selectedDate: new Date().toISOString().split('T')[0]
                 },
+                // TODO - create a separate object for these settings of the calendars
                 calendars:{
                     mandatoryEvents: {
                         colorName: 'mandatory-events',
@@ -100,10 +102,7 @@ export default {
                 callbacks:{
                     onEventClick(e){
                         useEventSelectedStore().setSelectedEvent(e)
-                    },
-                    onRangeUpdate(range) {
-                        console.log(range)
-                    },
+                    }
                 }
             });
             this.render=true;
@@ -135,13 +134,9 @@ export default {
 .sx__date-picker__month-view-header__month-year{
     color: var(--dark-blue) !important;
 }
-.sx__month-agenda-events__empty{
-    font-weight: bold;
-}
+.sx__month-agenda-events__empty{ font-weight: bold; }
 
-.sx__month-agenda-day--active{
-    box-shadow:inset 0 0 0 2px var(--dark-blue);
-}
+.sx__month-agenda-day--active{ box-shadow:inset 0 0 0 2px var(--dark-blue); }
 
 .sx__calendar-header{
     text-align: center;
@@ -150,8 +145,9 @@ export default {
 
 .sx__month-grid-day__header-date.sx__is-today, .sx__view-selection-item:hover, .sx__date-picker__day--selected{
     background-color: var(--dark-blue);
+    color: white !important;
 }
-.sx__month-grid-event{cursor: pointer;}
+.sx__month-grid-event{ cursor: pointer; }
 
 @media (min-width: 530px){
    .sx__date-picker-wrapper, .sx__calendar-header-content:nth-child(2), .sx__view-selection{
@@ -159,16 +155,10 @@ export default {
     } 
 }
 
-.sx__view-selection-item, .sx__date-picker__day--today{
-    background-color: var(--faded-dark-blue);
-}
+.sx__view-selection-item, .sx__date-picker__day--today{ background-color: var(--faded-dark-blue); }
 
-.sx__view-selection-item:hover, .sx__date-picker__day--selected{
-    color: var(--white);
-}
+.sx__view-selection-item:hover, .sx__date-picker__day--selected{ color: var(--white); }
 
-.sx__view-selection{display: none;}
-
-
+.sx__view-selection{ display: none; }
 
 </style>

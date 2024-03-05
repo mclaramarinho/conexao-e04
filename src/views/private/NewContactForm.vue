@@ -10,13 +10,13 @@
                                     type="text" variant="outlined" hide-details="auto" autocomplete="on"
                                     label="Nome" :model-value="contact.name"
                                     :rules="maxChars(30)" validate-on="input"
-                                    @input="(e : HTMLInputElement) => contact.name = e.target?.value" />
+                                    @input="(e : any) => contact.name = e.target?.value" />
                             </v-col>
                             <v-col cols="12" class="mb-5">
                                 <v-textarea label="Quando contatar?" variant="outlined" 
                                     :model-value="contact.whenToContact" counter
                                     :rules="maxChars(100)" validate-on="input"
-                                    @change="(e : HTMLInputElement) => contact.whenToContact = e.target?.value"/>
+                                    @change="(e : any) => contact.whenToContact = e.target?.value"/>
                             </v-col>
                         </v-row>
                         <v-row no-gutters class="column-gap-5">
@@ -24,13 +24,13 @@
                                 <v-text-field variant="outlined" hide-details="auto" type="tel"
                                     validate-on="input" :rules="telephone"
                                     label="Telefone" :model-value="contact.phoneNumber"
-                                    @input="(e : HTMLInputElement) => contact.phoneNumber = e.target?.value" />
+                                    @input="(e : any) => contact.phoneNumber = e.target?.value" />
                             </v-col>
                             <v-col cols="12" class="mb-5">
                                 <v-text-field variant="outlined" hide-details="auto" type="email"
                                     validate-on="input" :rules="email"
                                     label="Email" :model-value="contact.email"
-                                    @input="(e : HTMLInputElement) => contact.email = e.target?.value" />
+                                    @input="(e : any) => contact.email = e.target?.value" />
                             </v-col>
                         </v-row>
                         <v-row no-gutters class="mt-5 text-end justify-content-end">
@@ -51,13 +51,11 @@ import TextBtn from '@/components/smaller_components/buttons/TextBtn.vue';
 import {maxChars, telephone, email, notEmpty} from '@/utils/validations'
 import type { IContact } from '@/https/contacts';
 import { createContact } from '@/https/contacts';
-import {useContactsList} from '@/stores/useContactsList';
 export default {
     name: 'new-contact-form',
     components: {
         TextBtn
     },
-    directives: {},
     data(){
      return{
             contact:{
@@ -74,20 +72,20 @@ export default {
             showError: false as boolean
         }
     },
-    mounted(){
-    },
     methods:{
         async handleContactCreation(){
-            const validation = await this.$refs.form?.validate();
-            console.log(this.contact);
-            
+            const validation = await (this.$refs.form as any)?.validate();
             
             if(validation.valid){
                 this.showError = false;
                 createContact(this.contact).then(r => {
                     if(r.code === 201){
-                        this.$refs.form?.reset();
+                        (this.$refs.form as any)?.reset();
+                        // TODO - Show success message
                     }
+                })
+                .catch(e => {
+                    // TODO - Show error message
                 })
             }else{
                 this.errorMessage = "Preencha todos os campos corretamente";
@@ -97,6 +95,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-</style>

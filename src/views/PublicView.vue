@@ -1,5 +1,5 @@
 <template>
-
+<!-- TODO - Create a separate component for the mobile view -->
     <v-container id="mobile_main_page" fluid class="p-0 d-md-none d-block position-relative overflow-hidden h-100">
         <v-row no-gutters class="p-0">
             <v-col cols="12">
@@ -13,6 +13,7 @@
                         <back-btn :path="'/'"/>                 
                     </v-col>
                 </v-container>
+                <!-- TODO - Use a computed variable for the title -->
                 <PublicViewHeader :title="currentDisplay === 2 ? 'Calendário' : currentDisplay === 3 ? 'Horário de Aulas' : currentDisplay === 4 ? 'Contatos Importantes' : currentDisplay === 5 ? 'FAQ' : ''" /> 
             </v-col>
         </v-row>
@@ -27,6 +28,7 @@
         </v-row>
     </v-container>
 
+<!-- TODO - Create a separate component for the desktop view -->
     <v-container id="main-page" fluid class="p-0 d-none d-md-block overflow-hidden h-100">
         <v-row no-gutters class="p-0 h-100">
             <v-col cols="12" sm="4" lg="6" class="bg-blue main-page-side">
@@ -36,19 +38,23 @@
             </v-col>
 
             <v-col sm="8" lg="6" class="position-relative">
-                <v-container style="height: 100vh;" class="">
+                <!-- TODO - create a class to style -->
+                <v-container style="height: 100vh;">
                     <v-row no-gutters
                         :class="currentDisplay === 2 ? 'h-90 w-90' : 'h-75'"
                         class=" position-absolute top-50 start-50 translate-middle w-75 align-content-baseline">
-                        <v-col cols="12" class="" style="height: fit-content;">
+                        <!-- TODO - create a class to style -->
+                        <v-col cols="12" style="height: fit-content;">
                             <v-row no-gutters>
                                 <v-col cols="12" v-if="currentDisplay !== 1">
                                     <back-btn :path="'/'"/>                 
                                 </v-col>
                             </v-row>
-                            <PublicViewHeader v-if="currentDisplay !== 1" :title="currentDisplay === 2 ? 'Calendário' : currentDisplay === 3 ? 'Horário de Aulas' : currentDisplay === 4 ? 'Contatos Importantes' : currentDisplay === 5 ? 'FAQ' : ''" /> 
+                            <!-- TODO - Use a computed variable for the title -->
+                            <PublicViewHeader v-if="currentDisplay !== 1"
+                                    :title="currentDisplay === 2 ? 'Calendário' : currentDisplay === 3 ? 'Horário de Aulas' : currentDisplay === 4 ? 'Contatos Importantes' : currentDisplay === 5 ? 'FAQ' : ''" /> 
                         </v-col>
-                        <v-col cols="12" id="scrollable_col" :class="currentDisplay === 2 ? 'h-100' : 'h-75'" class=" overflow-y-auto">
+                        <v-col cols="12" id="scrollable_col" :class="currentDisplay === 2 ? 'h-100' : 'h-75'" class="overflow-y-auto">
                             <MainMenu v-if="currentDisplay===1" />
                             <ClassSchedule v-if="currentDisplay===3" />
                             <ImportantContacts v-if="currentDisplay===4" />
@@ -57,9 +63,7 @@
                         </v-col>
                     </v-row>
                 </v-container>
-                            
             </v-col>
-           
         </v-row>
     </v-container>
 </template>
@@ -82,20 +86,15 @@ export default {
     data(){
         return{
             currentDisplay: 1,
-            a: false
         }
     },
     watch:{
         $route(to, from){
             this.checkPath()
-            console.log(this.currentDisplay);
-            
         },
     },
     created(){
         this.checkPath()
-        console.log(this.currentDisplay);
-
     },
     methods: {
         checkPath(){

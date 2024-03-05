@@ -1,5 +1,6 @@
 <template>
-    <multiuse-data-table :headers="headers" :table-items="tabelaitems" custom-slot-key="when_to_contact"
+    <!-- TODO - Check if custom-expanded-row-element is still necessary -->
+    <multiuse-data-table :headers="headers" :table-items="tabelaitems"
             item-value="email" refresh-button :loading="loading"
             @update="refreshContacts" 
             expandable expandable-item-key="when_to_contact" custom-expanded-row-element
@@ -7,7 +8,6 @@
             @delete="e => handleDeleteDialog(e)" @edit="(e) => handleEditDialog(e)">
 
         <template v-slot:expandedRowEl="{cols, item}">
-            
                 <tr>
                     <td :colspan="cols.length">
                         <v-table class="font-12 font-blue">
@@ -31,6 +31,7 @@
         <dialog-delete-item @delete-item-confirm="delContact" @close-delete="dialogDelete = false" />
     </v-dialog>
     <v-dialog v-model="dialogEdit" max-width="500px">
+        <!-- TODO - Create a function to handle @done event -->
         <contact-edit :item="selectedItem" @cancel="dialogEdit = false" @done="e => {dialogEdit = false; refreshContacts()}" />
     </v-dialog>
 </template>
@@ -38,7 +39,6 @@
 <script lang="ts">
 import MultiuseDataTable from '@/components/MultiuseDataTable.vue'
 import { deleteContact, getContacts } from '@/https/contacts';
-import { useContactsList } from '@/stores/useContactsList';
 import DialogDeleteItem from '@/components/smaller_components/dialogs/DialogDeleteItem.vue';
 import ContactEdit from '@/components/smaller_components/dialogs/ContactEdit.vue';
 export default {
@@ -52,8 +52,9 @@ export default {
             dialogEdit: false as boolean,
             dialogDelete: false as boolean,
             useContactsList: [] as any,
+            // TODO - Set the type of selectedItem
             selectedItem: {} as Object,
-            tabelaitems: useContactsList().contacts,
+            tabelaitems: [],
             headers: [
                 {
                     title: 'Nome',

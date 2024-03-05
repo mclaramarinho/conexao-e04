@@ -120,6 +120,7 @@ export default {
                 eventEnd: null as null | string,
                 organizer: null as null | string,
                 contact: null as null | string,
+                // TODO - Create an interface for contactType
                 contactType: "phone" as "phone" | "email",
                 location: null as null | string
             } as IEvent,
@@ -129,25 +130,26 @@ export default {
             notEmpty: notEmpty,
             errorMessage: null as null | string,
             showError: false as boolean,
-            style: {} as StyleValue
-        }
-    },
-    created() {
-        this.style = {
-            overflowY: 'auto',
-            display: 'block'
+            style:  { overflowY: 'auto', display: 'block' } as StyleValue
         }
     },
     mounted(){
+        // TODO - Create a function for this
         document.getElementsByName('eventEnd')[0].setAttribute('min', new Date().toISOString().split('T')[0] + 'T00:00');
     },
     methods:{
         async handleEventCreation(){
-            const validation = await this.$refs.form?.validate();
+            const validation = await (this.$refs.form as any)?.validate();
             
             if(validation.valid){
                 this.showError = false;
-                createEvent(this.event).then(r => console.log(r)).catch(e => console.log(e));
+                createEvent(this.event)
+                .then(r => {
+                    // TODO - Show success message
+                })
+                .catch(e => {
+                    // TODO - Show error message
+                });
             }else{
                 this.errorMessage = "Preencha todos os campos corretamente";
                 this.showError = true;
@@ -156,6 +158,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-</style>
