@@ -2,6 +2,7 @@ import { useUserInfoStore } from "@/stores/userInfo";
 import { BASE_URL, headers } from "./setup";
 import type { IHTTPResponse } from "./setup";
 
+// TODO - move to an HTTP Interfaces file
 export interface IEvent {
     eventName: string;
     isMandatory: boolean;
@@ -11,6 +12,7 @@ export interface IEvent {
     organizer: string | null;
     contact: string | null;
     location: string | null;
+    // TODO - Create an interface for contactType
     contactType: "phone" | "email";
 }
 
@@ -19,6 +21,7 @@ export async function createEvent(data : IEvent) : Promise<IHTTPResponse>{
     const res = {} as IHTTPResponse;
     try{
         const serviceURL = `${BASE_URL}/events/create`;
+        // TODO - create an interface for the body
         const body = {
             start_timestamp: data.eventStart,
             end_timestamp: data.eventEnd,
@@ -46,6 +49,7 @@ export async function createEvent(data : IEvent) : Promise<IHTTPResponse>{
         res.response = r;
         return res;
     }catch(err){
+        // TODO - handle error more specifically
         res.code = 400;
         res.response = err;
         return res
@@ -70,6 +74,7 @@ export async function getAllEvents() : Promise<IHTTPResponse>{
         res.response = resBody;
         return res
     }catch(err){
+        // TODO - handle error more specifically
         res.code = 400;
         res.response = err;
         return res
@@ -92,6 +97,7 @@ export async function getEvent(id : string) : Promise<IHTTPResponse>{
         res.response = resBody;
         return res
     }catch(err){
+        // TODO - handle error more specifically
         res.code = 400;
         res.response = err;
         return res
@@ -112,6 +118,7 @@ export async function deleteEvent(id : string) : Promise<IHTTPResponse>{
         res.response = {};
         return res
     }catch(err){
+        // TODO - handle error more specifically
         res.code = 400;
         res.response = err;
         return res
@@ -120,6 +127,8 @@ export async function deleteEvent(id : string) : Promise<IHTTPResponse>{
 export async function updateEvent(data : IEvent, id : string) : Promise<IHTTPResponse>{
     const serviceURL = `${BASE_URL}/events/update/${id}`
     const res = {} as IHTTPResponse;
+    
+    // TODO - create an interface for the body
     const body = {
         start_timestamp: data.eventStart,
         end_timestamp: data.eventEnd,
@@ -131,6 +140,8 @@ export async function updateEvent(data : IEvent, id : string) : Promise<IHTTPRes
         is_mandatory: data.isMandatory.toString(),
         last_edited_by: useUserInfoStore().UID,
     };
+
+    // TODO - Surround with try-catch block
     const options = {
         method: 'PUT',
         headers: headers,
@@ -145,6 +156,7 @@ export async function updateEvent(data : IEvent, id : string) : Promise<IHTTPRes
         res.response = resBody;
         return res
     }catch(err){
+        // TODO - handle error more specifically
         res.code = 400;
         res.response = err;
         return res

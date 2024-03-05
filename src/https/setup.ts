@@ -10,3 +10,5 @@ export interface IHTTPResponse {
     code: number;
     response: any;
 }
+
+// TODO - Create a collection of endpoints

@@ -2,6 +2,7 @@ import { useUserInfoStore } from "@/stores/userInfo";
 import { BASE_URL, headers } from "./setup";
 import type { IHTTPResponse } from "./setup";
 
+// TODO - move to an HTTP Interfaces file
 export interface IClass{
     name: string;
     days: string[];
@@ -36,8 +37,8 @@ export async function createClass(data : IClass) : Promise<IHTTPResponse> {
         isoDate.setHours(parseInt(arr[0]), parseInt(arr[1]), 0, 0);
         return isoDate.toISOString()
     });
-    
  
+    // TODO - create a type for the body
     const body = {
         name: data.name,
         days: data.days,
@@ -70,6 +71,7 @@ export async function createClass(data : IClass) : Promise<IHTTPResponse> {
         res.response = resBody;
         return res;
     }catch(err){
+        // TODO - handle error more specifically
         res.code = 400;
         res.response = err;
         return res
@@ -92,6 +94,7 @@ export async function getAllClasses() : Promise<IHTTPResponse>{
         res.response = resBody;
         return res;
     }catch(err){
+        // TODO - handle error more specifically
         res.code = 400;
         res.response = err;
         return res;
@@ -112,6 +115,7 @@ export async function deleteClass(id : string) : Promise<IHTTPResponse>{
         res.response = {};
         return res;
     }catch(err){
+        // TODO - handle error more specifically
         res.code = 400;
         res.response = err;
         return res;
@@ -121,7 +125,8 @@ export async function deleteClass(id : string) : Promise<IHTTPResponse>{
 export async function updateClass(data : IClass, id : string) : Promise<IHTTPResponse>{
     const serviceURL = `${BASE_URL}/class/update/${id}`;
     const res = {} as IHTTPResponse;
-    
+
+    // TODO - create a type for the body
     const body = {
         name: data.name,
         days: data.days,
@@ -149,6 +154,7 @@ export async function updateClass(data : IClass, id : string) : Promise<IHTTPRes
         res.response = reqBody;
         return res;
     }catch(err){
+        // TODO - handle error more specifically
         res.code = 400;
         res.response = err;
         return res;
@@ -170,6 +176,7 @@ export async function getClass(id : string) : Promise<IHTTPResponse>{
         res.response = reqBody;
         return res;
     }catch(err){
+        // TODO - handle error more specifically
         res.code = 400;
         res.response = err;
         return res;

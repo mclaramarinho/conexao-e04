@@ -2,6 +2,7 @@ import { BASE_URL, headers } from '@/https/setup'
 import type { IHTTPResponse } from '@/https/setup'
 import { useUserInfoStore } from '@/stores/userInfo';
 
+// TODO - move to an HTTP Interfaces file
 export interface IFaq{
     question: string;
     answer: string;
@@ -10,6 +11,8 @@ export interface IFaq{
 export async function createFAQ(data : IFaq) : Promise<IHTTPResponse>{
     const serviceURL = `${BASE_URL}/faq/create`;
     const res = {} as IHTTPResponse;
+
+    // TODO - create an interface for the body
     const body = {
         question: data.question,
         answer: data.answer,
@@ -32,6 +35,7 @@ export async function createFAQ(data : IFaq) : Promise<IHTTPResponse>{
         res.response = resBody;
         return res;
     }catch(err){
+        // TODO - handle error more specifically
         res.code = 400;
         res.response = err;
         return res;
@@ -61,6 +65,7 @@ export async function updateFAQ(data : IFaq, id : string) : Promise<IHTTPRespons
         res.response = resBody;
         return res;
     }catch(err){
+        // TODO - handle error more specifically
         res.code = 400;
         res.response = err;
         return res;
@@ -83,6 +88,7 @@ export async function getAllFAQs() : Promise<IHTTPResponse>{
         res.response = resBody;
         return res;
     }catch(err){
+        // TODO - handle error more specifically
         res.code = 400;
         res.response = err;
         return res;

@@ -2,12 +2,13 @@ import { useUserInfoStore } from "@/stores/userInfo";
 import { BASE_URL, headers } from "./setup";
 import type { IHTTPResponse } from "./setup";
 
+// TODO - move to an HTTP Interfaces file
 export interface IContact {
     name: string;
     phoneNumber: string;
     email: string;
     whenToContact: string;
-}
+};
 
 
 export async function createContact(data : IContact) : Promise<IHTTPResponse>{
@@ -38,6 +39,7 @@ export async function createContact(data : IContact) : Promise<IHTTPResponse>{
 
         return res;
     }catch(err){
+        // TODO - handle error more specifically
         res.code = 400;
         res.response = err;
         return res;
@@ -83,6 +85,7 @@ export async function deleteContact(id : string) : Promise<IHTTPResponse>{
         res.response = {};
         return res;
     }catch(e){
+        // TODO - handle error more specifically
         res.code = 400;
         res.response = e;
         return res;
@@ -91,6 +94,7 @@ export async function deleteContact(id : string) : Promise<IHTTPResponse>{
 
 export async function updateContact(id : string, data : IContact) : Promise<IHTTPResponse>{
     const serviceURL = `${BASE_URL}/contact/update/${id}`;
+    // TODO - Create a body interface
     const body = {
         name: data.name,
         phone_number: data.phoneNumber,
@@ -115,6 +119,7 @@ export async function updateContact(id : string, data : IContact) : Promise<IHTT
         res.response = resBody;
         return res;
     }catch(e){
+        // TODO - handle error more specifically
         res.code = 400;
         res.response = e;
         return res;
