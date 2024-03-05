@@ -1,3 +1,4 @@
+// TODO - Delete this file
 const classSchedule = [
     {
       name: 'Extensionista 2',

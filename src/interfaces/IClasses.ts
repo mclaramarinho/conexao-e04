@@ -5,3 +5,5 @@ export default interface IClasses {
     day: String;
     classroom: String;
 }
+
+// TODO - Check if can be replaced by IClassesView

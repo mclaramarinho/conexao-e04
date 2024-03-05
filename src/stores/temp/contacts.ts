@@ -1,3 +1,4 @@
+// TODO - Delete this file
 export const contacts = [
     {
         name: 'Direção',
