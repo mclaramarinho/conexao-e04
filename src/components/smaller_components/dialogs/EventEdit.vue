@@ -1,20 +1,20 @@
 <template>
     <v-card class="pt-3" v-if="!enableDelete">
+        <!-- TODO - create a global class for text-wrap: balance -->
         <v-card-title style="text-wrap: balance;">
             <h3 class="text-center font-blue bold">Detalhes do Evento</h3>
         </v-card-title>
         <v-card-actions>
             <v-row no-gutters justify="space-around">
-                <v-btn  :text="enableEditing ? 'Cancelar' : 'Editar'"
-                        class="px-3"
+                <!-- TODO - create a new function for the @click event -->
+                <v-btn  :text="enableEditing ? 'Cancelar' : 'Editar'" class="px-3"
                         @click="{enableEditing && fetchEvent(); enableEditing=!enableEditing; }" 
                         color="var(--dark-blue)" :variant="enableEditing ? 'outlined' : 'tonal'" 
                         :prepend-icon="enableEditing ? 'mdi-close' : 'mdi-pencil'" />
 
                 <v-btn  text="Excluir" class="px-3"
                         @click="enableDelete = true"
-                        color="var(--danger-red)" variant="tonal"
-                        prepend-icon="mdi-delete" />
+                        color="var(--danger-red)" variant="tonal" prepend-icon="mdi-delete" />
             </v-row>
         </v-card-actions>
         <v-card-text>
@@ -137,6 +137,7 @@ export default{
     },
     data(){
         return{
+            // TODO - set the type of localEvent
             localEvent:{},
             contactType:"" as 'phone' | 'email',
             enableEditing: false,
@@ -162,7 +163,7 @@ export default{
             })
         },
         editEvent(){
-            const isValid = this.$refs.form.validate();
+            const isValid = (this.$refs.form as any).validate();
             if(isValid){
                 
                 const data = {
@@ -181,7 +182,7 @@ export default{
                     this.enableEditing = false;
                 }).catch(e => {
                     console.log(e)
-                    //error message
+                    //TODO - show error message
                 })
             }
         },
@@ -190,13 +191,12 @@ export default{
 
             deleteEvent(id).then(r => {
                 if(r.code === 204){
-                   
                     this.$emit('done');
-                    //show success message
+                    //TODO - show success message
                 }
             }).catch(e => {
                 console.log(e)
-                //error message
+                //TODO - error message
             }).finally(() =>  this.enableDelete = false)
         }
     },

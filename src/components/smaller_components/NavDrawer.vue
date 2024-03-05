@@ -13,7 +13,7 @@
                 <v-icon 
                     :icon="showDrawer ? 'mdi-chevron-double-up' : 'mdi-chevron-double-down'"
                     color="var(--dark-blue)"
-                    :onmouseup="e => showDrawer = !showDrawer"
+                    :onmouseup="(e : any) => showDrawer = !showDrawer"
                     class="btn" size="30" />
             </div>
         </template>
@@ -42,8 +42,6 @@ export default {
     },
     watch:{
         selection(nv, ov){
-            console.log(nv);
-            
             if(nv !== ov) this.navigateEvent(nv);
             else return;
         }

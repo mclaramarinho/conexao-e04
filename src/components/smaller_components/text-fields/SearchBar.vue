@@ -51,7 +51,7 @@ export default {
         }
     }, 
     methods:{
-        emitTypeEvent(e : HTMLInputElement){
+        emitTypeEvent(e : any){
             this.$emit('type', e.target?.value);
         }
     },
