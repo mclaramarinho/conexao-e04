@@ -20,12 +20,13 @@
                             />
                     </v-col>
                     <v-col v-if="otpValid" cols="1" class="text-center">
-                        <v-icon size="large" class="top-50 translate-middle-y" style="font-size: 2.5rem;" color="var(--green)" icon="mdi-check"></v-icon>
+                        <!-- TODO - Create class for the style attr -->
+                        <v-icon size="large" class="top-50 translate-middle-y" 
+                                style="font-size: 2.5rem;" color="var(--green)" icon="mdi-check"></v-icon>
                     </v-col>
                 </v-row>
             </v-form>
             <v-row no-gutters>
-            
                 <v-btn
                     size="large" text="Desisti! Quero voltar..."
                     color="var(--dark-blue)" variant="text"
@@ -78,8 +79,6 @@ export default{
                 this.loading = true
                 setTimeout(() => {
                     this.loading = false
-                    console.log("alright");
-                    
                     this.$emit('procceed', 2)
                 }, 2000)
             },
@@ -106,7 +105,6 @@ export default{
                     
 
                     //create firebase account
-                    
                     const firebase_create  = await register(email, password, name)
                     if(!firebase_create){
                         throw Error("Não foi possível criar a conta no Firebase");
@@ -117,17 +115,15 @@ export default{
                     if(canCreateDb){
                         //create user in db
                         const user = await isLoggedIn() as User | boolean
-                        console.log("isLoggedIn: "+user);
                         
                         if(!user) return
                         user_store.setFirebase_uid((user as User).uid);
                         user_store.setCreation_date_timestamp((user as User).metadata.creationTime as string)
+
                         const created = await admin_create(user_store.getData());
-                        console.log("created: "+created);
                         
                         if(!created) throw Error("Não foi possível criar sua conta no banco de dados."); // error message
 
-                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
                         useUserInfoStore().update().then(r => {
                             this.$router.push({name: 'admin-events', params: {id: useUserInfoStore().UID as string}});
                         }).catch(r => {
@@ -139,7 +135,6 @@ export default{
                     
                     if(e.message.includes('Não') || e.message.includes('inesperado')){
                         this.errorMsg = e.message;
-                        console.log("error: "+this.errorMsg);
                     }else{
                         this.errorMsg = "Ops... Tivemos algum erro inesperado.";
                         return

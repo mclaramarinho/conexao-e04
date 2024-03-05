@@ -20,6 +20,7 @@ export default {
     name: 'FaqSection',
     data() {
         return {
+            // TODO - replace with data brought from the api
             faq: [
                 {
                     question: 'What is the purpose of this website?',
@@ -66,8 +67,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-
-
-</style>

@@ -1,6 +1,9 @@
+<!-- TODO - change the calendar component to use the ScheduleX calendar component -->
+
 <template>
   <v-sheet max-height="100vh" position="relative" class="w-90 h-100 overflow-y-auto mx-auto">
-    <v-calendar v-model:model-value="value" class="position-relative mx-auto" :weekdays="weekday" view-mode="month" hide-week-number></v-calendar>
+      <v-calendar v-model:model-value="value" class="position-relative mx-auto"
+                  :weekdays="weekday" view-mode="month" hide-week-number />
   </v-sheet>
   </template>
 
@@ -23,9 +26,6 @@
         colors: ['blue', 'indigo', 'deep-purple', 'cyan', 'green', 'orange', 'grey darken-1'],
         titles: ['Meeting', 'Holiday', 'PTO', 'Travel', 'Event', 'Birthday', 'Conference', 'Party'],
       }),
-      created(){
-        this.getDayHeight()
-      },
       mounted () {
         const adapter = useDate()
         this.getEvents({ start: adapter.startOfDay(adapter.startOfMonth(new Date())), end: adapter.endOfDay(adapter.endOfMonth(new Date())) })
@@ -63,22 +63,6 @@
         rnd (a : any, b : any) {
           return Math.floor((b - a + 1) * Math.random()) + a
         },
-        getDayHeight(){
-          // const parent = document.getElementById("scrollable_col")
-          // const p_height = parent?.clientHeight
-          // const day_cell = document.querySelectorAll(".v-calendar-month__days > .v-calendar-month__day")
-          
-          // day_cell.forEach((item) => {
-          //   if(p_height){
-          //     item.style.height = p_height/6
-          //     console.log(item.style.height)
-          //   }
-            
-          // })
-          // 
-          // const container = document.getElementsByClassName("v-calendar__container")[0]
-          // container.
-        }
       },
     }
   </script>

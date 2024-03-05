@@ -13,16 +13,15 @@
                         :rules="notEmpty" validate-on="input"
                         type="text"
                         label="Seu nome"
-                        v-model="name" @change="e => name=e.target.value" />
+                        v-model="name" @change="(e : any) => name=e.target.value" />
                 </v-row>
                 <v-row no-gutters class="">
-                    <email-field @update:email="(e) => email = e" :email="email" />
+                    <email-field @update:email="(e : any) => email = e" :email="email" />
                 </v-row>
                 <v-row no-gutters class="">
-                    <pswd-field  @update:pswd="(e) => pswd = e" :pswd="pswd" />
+                    <pswd-field  @update:pswd="(e : any) => pswd = e" :pswd="pswd" />
                 </v-row>
                 <v-row no-gutters>
-                    <!-- <p v-if="error" class="font-red mx-auto font-12">Ops... Tivemos algum erro inesperado.</p> -->
                     <v-btn
                         size="large" text="CONTINUAR"
                         color="var(--dark-blue)" variant="outlined"
@@ -38,7 +37,7 @@
                 <v-btn
                     size="large" text="Desisti! Quero voltar..."
                     color="var(--dark-blue)" variant="text"
-                    @click="e => $router.push('/admin/login')"
+                    @click="(e : any) => $router.push('/admin/login')"
                     class="mx-auto w-fit"/>
             </v-row>
         </v-col>
@@ -72,14 +71,9 @@ export default{
                 this.loading = true;
                 this.error = false;
                     try{
-                        console.log("alright");
-                        
                         useAccountCreationStore().constructor(this.email as string, this.pswd as string, this.name as string)
-                        console.log("alright 2");
                         this.$emit("procceed", 2)
-
                     }catch(e){
-                        
                         this.error = true;
                     }
                 this.loading = false;

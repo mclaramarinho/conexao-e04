@@ -1,14 +1,13 @@
 <template>
-    
     <v-table density="comfortable" class="position-relative mx-auto w-90 text-center font-blue" hover>
         <tbody>
             <tr>
-                <th colspan="1" id="day_col" scope="col" class="text-center bold">DIA</th>
-                <th colspan="2" id="start_col" scope="col" class="text-center bold">INÍCIO</th>
-                <th colspan="2" id="end_col" scope="col" class="text-center bold">FIM</th>
-                <th colspan="5" id="class_col" scope="col" class="text-center bold">DISCIPLINA</th>
-                <th colspan="1" id="room_col" scope="col" class="text-center bold">SALA</th>
-                <th colspan="1" id="empty_col" scope="col" class="text-center bold d-none d-md-block"></th>
+                <th colspan="1" scope="col" class="text-center bold">DIA</th>
+                <th colspan="2" scope="col" class="text-center bold">INÍCIO</th>
+                <th colspan="2" scope="col" class="text-center bold">FIM</th>
+                <th colspan="5" scope="col" class="text-center bold">DISCIPLINA</th>
+                <th colspan="1" scope="col" class="text-center bold">SALA</th>
+                <th colspan="1" scope="col" class="text-center bold d-none d-md-block"></th>
             </tr>
             <tr v-for="(weekday) in weekdays" :key="weekday">
                 <td colspan="1" class="p-0">
@@ -20,11 +19,12 @@
                         </v-row>
                     </v-container>
                 </td>
-                <class-schedule-cells :day="weekday" :classes="returnClassArray(weekday)" :colspan="2" info="start" id="monday_row"/>
-                <class-schedule-cells :day="weekday" :classes="returnClassArray(weekday)" :colspan="2" info="end" id="tuesday_row"/>
-                <class-schedule-cells :day="weekday" :classes="returnClassArray(weekday)" :colspan="5" info="name" id="wednesday_row"/>
-                <class-schedule-cells :day="weekday" :classes="returnClassArray(weekday)" :colspan="1" info="room" id="thursday_row"/>
-                <class-schedule-cells class="d-none d-md-block" :day="weekday" :classes="returnClassArray(weekday)" :colspan="1" info="icon" id="friday_row"/>
+                <class-schedule-cells :day="weekday" :classes="returnClassArray(weekday)" :colspan="2" info="start"/>
+                <class-schedule-cells :day="weekday" :classes="returnClassArray(weekday)" :colspan="2" info="end"/>
+                <class-schedule-cells :day="weekday" :classes="returnClassArray(weekday)" :colspan="5" info="name"/>
+                <class-schedule-cells :day="weekday" :classes="returnClassArray(weekday)" :colspan="1" info="room"/>
+                <class-schedule-cells class="d-none d-md-block" 
+                        :day="weekday" :classes="returnClassArray(weekday)" :colspan="1" info="icon"/>
             </tr>
         </tbody>
     </v-table>
@@ -61,35 +61,35 @@ export default {
     },
     methods: {
         returnClassArray(day:string){
-            let arrayToReturn = []
+            let arrayToReturn = [];
             switch (day) {
-                case 'Seg':
-                    arrayToReturn = this.monday
+                case 'Seg': 
+                    arrayToReturn = this.monday;
                     break;
                 case 'Ter':
-                    arrayToReturn = this.tuesday
+                    arrayToReturn = this.tuesday;
                     break;
                 case 'Qua':
-                    arrayToReturn = this.wednesday
+                    arrayToReturn = this.wednesday;
                     break;
                 case 'Qui':
-                    arrayToReturn = this.thursday
+                    arrayToReturn = this.thursday;
                     break;
-            }
+            };
             
             if (arrayToReturn.length > 1) {
-                arrayToReturn = this.orderClasses(arrayToReturn)
+                arrayToReturn = this.orderClasses(arrayToReturn);
             }
-            let correctArray = [] as Array<any>
+            let correctArray = [] as Array<any>;
             arrayToReturn.map(item => {
                 correctArray.push({
                     start: item.start,
                     end: item.end,
                     name: item.name,
                     classroom: item.classroom
-                })
-            })
-            return correctArray
+                });
+            });
+            return correctArray;
         },
         timeToISOString(time: string){
             const notISO = new Date(`2000-10-12T${time}`);
@@ -98,8 +98,8 @@ export default {
         },
         orderClasses (classes : Array<any>){
             return classes.sort((a, b) => {
-                const aStart = this.timeToISOString(a.start)
-                const bStart = this.timeToISOString(b.start)
+                const aStart = this.timeToISOString(a.start);
+                const bStart = this.timeToISOString(b.start);
                 if (aStart < bStart) {
                     return -1;
                 }
