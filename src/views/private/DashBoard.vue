@@ -32,6 +32,26 @@
                                     <new-class-form v-if="title==='Disciplinas'" />
                                 </v-window-item>
 
+                                <v-window-item value="Perfil">
+                                    <v-row no-gutters>
+                                        <v-col cols="12" md="8" lg="6" class="mx-auto">
+                                            <admin-profile />
+                                        </v-col>
+                                    </v-row>
+                                </v-window-item>
+
+                                <v-window-item value="Convite">
+                                    <v-row no-gutters>
+                                        <v-col cols="12" md="8" lg="6" class="mx-auto">
+                                            <invite-settings />
+                                        </v-col>
+                                    </v-row>
+                                </v-window-item>
+
+                                <v-window-item value="Users">
+                                    <users-view />
+                                </v-window-item>
+                                
                                 <v-window-item :value="title">
                                     <contact-view v-if="title==='Contatos'" />
                                     <faq-view v-if="title==='FAQ'" />
@@ -54,10 +74,14 @@ import FaqView from '@/views/private/FaqView.vue';
 import ContactView from '@/views/private/ContactView.vue';
 import ClassesView from './ClassesView.vue';
 import EventsView from './EventsView.vue';
+import AdminProfile from './AdminProfile.vue';
+import InviteSettings from './InviteSettings.vue';
+import UsersView from './UsersView.vue';
+
 export default {
     name: 'dash-board',
     components: {
-        NewEventForm, NewContactForm, NewClassForm, FaqView, ContactView, ClassesView, EventsView
+        NewEventForm, NewContactForm, NewClassForm, FaqView, ContactView, ClassesView, EventsView, AdminProfile, InviteSettings, UsersView
     },
     data(){
         return {
@@ -68,13 +92,5 @@ export default {
         title: String,
         tabs: {type: Array<string>, default: [] as Array<string>}
     },
-    created(){
-    },
-    methods:{
-        
-    }
 }
 </script>
-
-<style scoped>
-</style>
