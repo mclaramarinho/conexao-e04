@@ -9,26 +9,26 @@
                     <v-col cols="12">
                         <v-text-field variant="outlined" label="Nome" 
                                 :model-value="name"
-                                @input="e => name = e.target.value">
+                                @input="(e : any) => name = e.target.value">
                         </v-text-field>
                     </v-col>
                     <v-col cols="12">
                         <v-text-field variant="outlined" label="Telefone" 
                                 :model-value="phone"
-                                @input="e => phone = e.target.value">
+                                @input="(e : any) => phone = e.target.value">
                         </v-text-field>
                     </v-col>
                     <v-col cols="12">
                         <v-text-field variant="outlined" label="Email" 
                                 :model-value="email"
-                                @input="e => email = e.target.value">
+                                @input="(e : any) => email = e.target.value">
                         </v-text-field>
                     </v-col>
                 </v-row>
                 <v-row>
                     <v-col cols="12">
                         <v-textarea variant="outlined" label="Quando contatar?" 
-                                :model-value="when_to_contact" @input="e => when_to_contact = e.target.value" />
+                                :model-value="when_to_contact" @input="(e : any) => when_to_contact = e.target.value" />
                     </v-col>
                 </v-row>
             </v-container>
@@ -69,20 +69,26 @@ export default {
             const email = this.email;
             const when_to_contact = this.when_to_contact;
             if(!name || !phone || !email || !when_to_contact){
-                // Show an error message
+                // TODO - Show an error message
                 return;
             }
             
             // Call the http update method to update the faq item
-            const data = {} as IContact;
-            data.name = name;
-            data.phoneNumber = phone;
-            data.email = email;
-            data.whenToContact = when_to_contact;
-            updateContact(this.item._id, data).then(r => this.$emit("done", r)).catch(e => console.error(e));
-            
-            // on success, show a success message
-            // on failure, show an error message
+            const data = {
+                name: name,
+                phoneNumber: phone,
+                email: email,
+                whenToContact: when_to_contact
+            } as IContact;
+
+            // TODO - set the type
+            updateContact(this.item._id, data).then(r => {
+                this.$emit("done", r);
+                // TODO - on success, show a success message
+            }).catch(e => {
+                console.error(e);
+                // TODO - on failure, show an error message
+            });
         }
     },
     emits: ['cancel', 'done']
