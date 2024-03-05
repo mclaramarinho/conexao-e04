@@ -6,6 +6,7 @@
 
        <v-card-subtitle>
             <v-row no-gutters>
+                <!-- TODO - Use the existing customized pswd field component -->
                 <v-text-field type="password" :model-value="pswdConfirm"
                         variant="outlined" label="Confirme sua senha" 
                         @input="(e : any) => pswdConfirm = e.target.value"
