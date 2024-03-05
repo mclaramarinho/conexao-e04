@@ -1,8 +1,7 @@
 import { isLoggedIn } from "@/firebase/authorization";
-import { admin_get_all, admin_get_one } from "@/https/admin";
+import { admin_get_one } from "@/https/admin";
 import type { User } from "firebase/auth";
 import { defineStore } from "pinia";
-import { el } from "vuetify/locale";
 
 export const useUserInfoStore = defineStore({
     id: "userInfo",
@@ -15,6 +14,7 @@ export const useUserInfoStore = defineStore({
     }),
     actions: {
         async update() : Promise<void>{
+            // TODO - Refactor this
             isLoggedIn().then((user) => {
                 if(user){
                     const u = user as User;
@@ -23,7 +23,7 @@ export const useUserInfoStore = defineStore({
                     this.email = u.email as string;
                     this.displayName = u.displayName as string;
                     admin_get_one().then((res) => {
-                        this.role = res.role as string;
+                        this.role = res.response.role as string;
                     }).catch(e => {
                         console.log(e);
                         throw new Error(e.message);
@@ -37,6 +37,9 @@ export const useUserInfoStore = defineStore({
                 this.role = '';
                 throw e;
             })
+        },
+        getUser(){
+            return this.$state
         }
     }
 })
