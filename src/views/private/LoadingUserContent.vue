@@ -10,16 +10,8 @@ import { useUserInfoStore } from '@/stores/userInfo';
 
 export default {
     name: 'LoadingUserContent',
-    data(){
-        return {
-        }
-    },
-
     created() {
-        
         setTimeout(() => {
-            console.log("got here");
-            
             if(useUserInfoStore().UID === "" || useUserInfoStore().UID === undefined || useUserInfoStore().UID === null){
                 useUserInfoStore().update().then(() => {
                     this.chooseNext()
@@ -29,12 +21,10 @@ export default {
             }else{
                 this.chooseNext()
             }
-            
         }, 1000);
     },
     methods:{
         chooseNext(){
-            const prev = this.$router.options.history.state.back || "";
             const qRedirect = this.$route.query.redirect || "";
             this.$router.push({name: qRedirect as string, params: {id: useUserInfoStore().UID as string}});
         }
