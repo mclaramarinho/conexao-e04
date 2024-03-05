@@ -1,18 +1,21 @@
 <template>
     <v-card class="py-4">
         <v-card-title>
+            <!-- TODO - create a global class for text-wrap: balance -->
             <h3 class="text-center font-blue" style="text-wrap: balance;">{{ title }}</h3>
         </v-card-title>
         <v-card-text>
             <v-container>
                 <v-row>
                     <v-col cols="12">
-                        <v-text-field variant="outlined" label="Pergunta" :model-value="question" @input="e => question = e.target.value"></v-text-field>
+                        <v-text-field variant="outlined" label="Pergunta"
+                                :model-value="question" @input="(e : any) => question = e.target.value" />
                     </v-col>
                 </v-row>
                 <v-row>
                     <v-col cols="12">
-                        <v-textarea variant="outlined" label="Resposta" :model-value="answer" @input="e => answer = e.target.value"></v-textarea>
+                        <v-textarea variant="outlined" label="Resposta"
+                                :model-value="answer" @input="(e : any) => answer = e.target.value" />
                     </v-col>
                 </v-row>
             </v-container>
@@ -58,7 +61,7 @@ export default {
         createNewFAQ(){
 
             if(!this.question || !this.answer){
-                //error message
+                //TODO - show error message
                 return;
             }
             const data = {
@@ -67,10 +70,10 @@ export default {
             } as IFaq;
 
             createFAQ(data).then(r => {
-                // on success, show a success message
+                //TODO - on success, show a success message
                 this.$emit("done", r)
             }).catch(e => {
-                // on failure, show an error message
+                //TODO - on failure, show an error message
                 console.log(e)
             })
             
@@ -80,25 +83,24 @@ export default {
         editFAQ(){
             // Call the http update method to update the faq item
             if(!this.question || !this.answer){
-                //error message
+                //TODO - show error message
                 return;
             }
             const data = {
                 question: this.question,
                 answer: this.answer
             } as IFaq;
-
+            
+            // FIXME - _id or id???
             updateFAQ(data, this.item?._id as string)
             .then(r =>{
-                // on success, show a success message
+                //TODO - on success, show a success message
                 this.$emit("done", r)
             })
             .catch(e => {
-                // on failure, show an error message
+                //TODO - on failure, show an error message
                 console.log(e)
             })
-            
-            
         }
     },
     emits: ['cancel', 'done']

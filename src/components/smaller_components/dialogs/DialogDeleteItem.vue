@@ -1,9 +1,14 @@
 <template>
     <v-card class="p-4">
         <v-card-title class="mb-3">
-            <h3 class="font-blue text-center" style="text-wrap: balance;">Tem certeza que deseja excluir esse item?</h3>
-        </v-card-title>
+            <!-- TODO - create a global class for text-wrap: balance -->
+            <h3 class="font-blue text-center" style="text-wrap: balance;">Tem certeza que deseja excluir {{what}}?</h3>
+       </v-card-title>
 
+       <v-card-subtitle>
+            <slot name="extra" />
+       </v-card-subtitle>
+        
         <v-card-actions class="mt-5">
             <v-spacer></v-spacer>
             <v-btn color="var(--dark-blue)" size="large" class="font-12" variant="tonal" @click="$emit('closeDelete')">Cancelar</v-btn>
@@ -18,12 +23,7 @@
 export default {
     name: 'dialog-delete-item',
     props: {
-        dialogDelete: Boolean
-    },
-    data(){
-        return {
-            dialog: this.dialogDelete || false
-        }
+        what: {type: String, default: 'esse item', required: false}
     },
     emits: ['closeDelete', 'deleteItemConfirm']
 }
