@@ -3,20 +3,20 @@ import { defineStore } from "pinia";
 export const useAccountCreationStore = defineStore({
   id: "accountCreation",
   state: () => ({
-    email: "",
-    password: "",
-    name:"",
-    otp: "",
-    role: "",
-    firebase_uid: "",
-    creation_date_timestamp: "",
+    email: null as string | null,
+    password: null as string | null,
+    name:null as string | null,
+    otp: null as string | null,
+    role: null as string | null,
+    firebase_uid: null as string | null,
+    creation_date_timestamp: null as string | null,
   }),
   actions: {
     constructor(email : string, password : string, name : string){
         this.email = email;
         this.password = password;
         this.name = name;
-    },
+    }, 
     setEmail(email: string) {
       this.email = email;
     },
