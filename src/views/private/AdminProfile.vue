@@ -11,28 +11,25 @@
         </v-row>
         <v-row no-gutters justify="space-between">
             <v-btn prepend-icon="mdi-delete" text="Excluir conta" color="var(--danger-red)" variant="tonal"
-                    @click="(e : any) => {return confirmDialog=true, del=true, edit=false}" />
-                    <!-- TODO - Create a function to handle @click event -->
+                    @click="handleClickDeleteAccount" />
 
             <v-btn :prepend-icon="!isEditing ? 'mdi-pencil' : 'mdi-close'"
                     :text="!isEditing ? 'Editar' : 'Cancelar'"
                     color="var(--dark-blue)" variant="tonal" 
                     @click="isEditing = !isEditing"/>
+
             <v-btn v-if="isEditing" prepend-icon="mdi-check" 
                     text="Confirmar" variant="tonal" color="var(--green)"
-                    @click="(e : any) => {return confirmDialog=true, del=false, edit=true}" />
-                    <!-- TODO - Create a function to handle @click event -->
+                    @click="handleClickConfirmChanges" />
         </v-row>
     </v-form>
     
     <v-dialog max-width="500px" :model-value="confirmDialog">
         <dialog-confirm-action v-if="edit"
-             @confirm="e => updateReq(e)"    @cancel="() => {return confirmDialog = false, edit = false;}" />
-             <!-- TODO - Create a function to handle @cancel event -->
+             @confirm="e => updateReq(e)"    @cancel="resetDialogsAndActions" />
         
         <dialog-confirm-action v-if="del"
-            @confirm="e => deleteReq(e)"    @cancel="() => {return confirmDialog = false, del = false;}" />
-            <!-- TODO - Create a function to handle @cancel event -->
+            @confirm="e => deleteReq(e)"    @cancel="resetDialogsAndActions" />
     </v-dialog>
     
 </template>
@@ -41,6 +38,7 @@
 import { useUserInfoStore } from '@/stores/userInfo';
 import { deleteAccount, updateUser } from '@/firebase/authorization';
 import DialogConfirmAction from '@/components/smaller_components/dialogs/DialogConfirmAction.vue';
+import type { IFirebaseUserUpdate } from '@/interfaces/ResponseObjects';
 
 export default{
     name: 'admin-profile',
@@ -77,9 +75,9 @@ export default{
                 name: this.user.name,
                 email: this.user.email
             } as {name: string, email: string};
-            updateUser(data, pswd).then((res : Object|void) => {
+            updateUser(data, pswd).then((res : IFirebaseUserUpdate) => {
                 // TODO - Use the response interface for the res object
-                const r = res as {emailUpdated: boolean, nameUpdated: boolean, error:{isError: boolean, code: string, message: string}, dbUpdated: boolean};
+                const r = res as IFirebaseUserUpdate;
 
                 if(r.emailUpdated&&r.nameUpdated){
                     // TODO - Set success message
@@ -109,11 +107,23 @@ export default{
                 }
 
                 // TODO - Show error message
-                // TODO - Create a reset function
-                this.confirmDialog = false;
-                this.del = false;
-                this.edit = false;
+                this.resetDialogsAndActions()
             })
+        },
+        handleClickDeleteAccount(){
+            this.confirmDialog=true;
+            this.del=true;
+            this.edit=false
+        },
+        handleClickConfirmChanges(){
+            this.confirmDialog=true;
+            this.del=false;
+            this.edit=true;
+        },
+        resetDialogsAndActions(){
+            this.confirmDialog = false;
+            this.del = false;
+            this.edit = false;
         }
     }
 }
