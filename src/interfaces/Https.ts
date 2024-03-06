@@ -8,6 +8,7 @@ export interface IUser{
 };
 
 export interface IClass{
+    id: string;
     name: string;
     days: string[];
     startTime: string[];
@@ -21,7 +22,7 @@ export interface IClass{
     observations: string | null;
 };
 
-export interface IClassesGetBody{
+export interface IClassFormatted{
     id: string;
     name: string;
     teacher: string;
@@ -33,6 +34,24 @@ export interface IClassesGetBody{
     finalExamDate: string;
     observations: string;
 };
+export interface IClassGetBody{
+    '_id': string;
+    name: string;
+    days: Array<string>;
+    start_time: Array<string>;
+    end_time: Array<string>;
+    classroom: string;
+    teacher: string;
+    exam_1_timestamp: string;
+    exam_2_timestamp: string;
+    re_take_exam_timestamp: string;
+    final_exam_timestamp: string;
+    observations: string;
+    created_by: string;
+    created_at_timestamp: string;
+    last_edited_by: string
+    last_edited_at_timestamp: string;
+}
 
 export interface IClassPostBody{
     name: string;
