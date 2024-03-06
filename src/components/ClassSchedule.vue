@@ -1,114 +1,158 @@
 <template>
-    <v-table density="comfortable" class="position-relative mx-auto w-90 text-center font-blue" hover>
+    <circular-loader v-if="!render" />
+    <v-table v-if="render" >
+        <thead>
+            <tr >
+                <th class="text-center">DIA</th>
+                <th class="text-center">INICIO</th>
+                <th class="text-center">FIM</th>
+                <th class="text-center">DISCIPLINA</th>
+                <th class="text-center">SALA</th>
+            </tr>
+        </thead>
+
         <tbody>
-            <tr>
-                <th colspan="1" scope="col" class="text-center bold">DIA</th>
-                <th colspan="2" scope="col" class="text-center bold">INÍCIO</th>
-                <th colspan="2" scope="col" class="text-center bold">FIM</th>
-                <th colspan="5" scope="col" class="text-center bold">DISCIPLINA</th>
-                <th colspan="1" scope="col" class="text-center bold">SALA</th>
-                <th colspan="1" scope="col" class="text-center bold d-none d-md-block"></th>
-            </tr>
-            <tr v-for="(weekday) in weekdays" :key="weekday">
-                <td colspan="1" class="p-0">
-                    <v-container class="p-0">
-                        <v-row no-gutters>
-                            <v-col cols="12" class="bold">
-                                {{ weekday.toUpperCase() }}
-                            </v-col>
-                        </v-row>
-                    </v-container>
+            <tr class="text-center" v-for="(day, i) in weekdays" :key="i">
+                <div v-if="day.classes.length > 1">
+                    <br v-for="(j) in day.classes.length" :key="j">
+                        {{ day.abbr.toUpperCase() }}
+                    <br v-for="(j) in day.classes.length" :key="j">
+                </div>
+                <div v-else>
+                    <br>
+                    {{ day.abbr.toUpperCase() }}
+                    <br>
+                </div>
+                <!-- START -->
+                <td>
+                    <br v-if="day.classes.length > 1">
+                    <div v-for="(c, index) in day.classes" :key="index">
+                        <tr>{{ getTime(c.start) }}</tr>
+                        <br v-if="day.classes.length > 1">
+                    </div>
                 </td>
-                <class-schedule-cells :day="weekday" :classes="returnClassArray(weekday)" :colspan="2" info="start"/>
-                <class-schedule-cells :day="weekday" :classes="returnClassArray(weekday)" :colspan="2" info="end"/>
-                <class-schedule-cells :day="weekday" :classes="returnClassArray(weekday)" :colspan="5" info="name"/>
-                <class-schedule-cells :day="weekday" :classes="returnClassArray(weekday)" :colspan="1" info="room"/>
-                <class-schedule-cells class="d-none d-md-block" 
-                        :day="weekday" :classes="returnClassArray(weekday)" :colspan="1" info="icon"/>
+                <!-- END -->
+                <td>
+                    <br v-if="day.classes.length > 1">
+                    <div v-for="(c, index) in day.classes" :key="index">
+                        <tr>{{ getTime(c.end) }}</tr>
+                        <br v-if="day.classes.length > 1">
+                    </div>
+                </td>
+                <!-- CLASS NAME -->
+                <td>
+                    <br v-if="day.classes.length > 1">
+                    <div v-for="(c, index) in day.classes" :key="index">
+                        <tr>{{ c.name }}</tr>
+                        <br v-if="day.classes.length > 1">
+                    </div>
+                </td>
+                <!-- ROOM -->
+                <td>
+                    <br v-if="day.classes.length > 1">
+                    <div v-for="(c, index) in day.classes" :key="index" class="justify-content-center text-center">
+                        <tr>{{ c.room }}</tr>
+                        <br v-if="day.classes.length > 1">
+                    </div>
+                </td>
             </tr>
+
         </tbody>
     </v-table>
 </template>
 
 <script lang="ts">
-import classSchedule from '@/stores/temp/classSchedule';
-import timeTable from '@/stores/temp/timeTable';
-import weekdays from '@/stores/temp/weekDays';
-import ClassScheduleCells from '../components/smaller_components/tables/ClassScheduleCells.vue'
+import type { IClassGetBody } from '@/interfaces/Https';
+import { getAllClasses } from '@/https/classes';
+import CircularLoader from './smaller_components/loaders/CircularLoader.vue';
 export default {
     name: 'ClassSchedule',
     components: {
-        ClassScheduleCells
+        CircularLoader
     },
     data() {
         return {
-            weekdays: weekdays,
-            times: timeTable,
-            currentWeekday: '',
-            classSchedule: classSchedule,
-            monday:[] as Array<any>, tuesday:[] as Array<any>, wednesday:[] as Array<any>,
-            thursday:[] as Array<any>, friday:[] as Array<any>
+            
+            classes: [] as Array<IClassGetBody>,
+            weekdays:{
+                monday: {
+                    name: 'Segunda-Feira',
+                    abbr: 'Seg',
+                    classes: [] as Array<Object>
+                },
+                tuesday: {
+                    name: 'Terça-Feira',
+                    abbr: 'Ter',
+                    classes: [] as Array<Object>
+                },
+                wednesday: {
+                    name: 'Quarta-Feira',
+                    abbr: 'Qua',
+                    classes: [] as Array<Object>
+                },
+                thursday: {
+                    name: 'Quinta-Feira',
+                    abbr: 'Qui',
+                    classes: [] as Array<Object>
+                },
+                friday: {
+                    name: 'Sexta-Feira',
+                    abbr: 'Sex',
+                    classes: [] as Array<Object>
+                },
+                saturday: {
+                    name: 'Sábado',
+                    abbr: 'Sáb',
+                    classes: [] as Array<Object>
+                }
+            },
+            render: false
         }
     },
-    created(){
-        classSchedule.map(item => {
-            item.day === 'Seg' && this.monday.push(item)
-            item.day === 'Ter' && this.tuesday.push(item)
-            item.day === 'Qua' && this.wednesday.push(item)
-            item.day === 'Qui' && this.thursday.push(item)
-            item.day === 'Sex' && this.friday.push(item)
-        })
+    async created(){
+        await this.fetchClasses()
     },
     methods: {
-        returnClassArray(day:string){
-            let arrayToReturn = [];
-            switch (day) {
-                case 'Seg': 
-                    arrayToReturn = this.monday;
-                    break;
-                case 'Ter':
-                    arrayToReturn = this.tuesday;
-                    break;
-                case 'Qua':
-                    arrayToReturn = this.wednesday;
-                    break;
-                case 'Qui':
-                    arrayToReturn = this.thursday;
-                    break;
-            };
-            
-            if (arrayToReturn.length > 1) {
-                arrayToReturn = this.orderClasses(arrayToReturn);
-            }
-            let correctArray = [] as Array<any>;
-            arrayToReturn.map(item => {
-                correctArray.push({
-                    start: item.start,
-                    end: item.end,
-                    name: item.name,
-                    classroom: item.classroom
-                });
-            });
-            return correctArray;
-        },
-        timeToISOString(time: string){
-            const notISO = new Date(`2000-10-12T${time}`);
-            const ISO = notISO.toISOString()
-            return ISO
-        },
-        orderClasses (classes : Array<any>){
-            return classes.sort((a, b) => {
-                const aStart = this.timeToISOString(a.start);
-                const bStart = this.timeToISOString(b.start);
-                if (aStart < bStart) {
-                    return -1;
-                }
-                if (aStart > bStart) {
-                    return 1;
-                }
-                return 0;
-            })
+        async fetchClasses(){
+            this.render = false;
+            try{
+                const res = await getAllClasses();
+                if(res.code === 200){
+                    this.classes = res.response;
+                    this.classes.map(c => {
+                        const days = c.days;
 
+                        days.map((d, index) => {
+                            const en = d === 'Segunda-Feira' ? 'monday' : d === 'Terça-Feira' ? 'tuesday' : d === 'Quarta-Feira' ? 'wednesday' : d === 'Quinta-Feira' ? 'thursday' : d === 'Sexta-Feira' ? 'friday' : 'saturday';
+                            this.weekdays[en].classes.push({
+                                _id: c._id,
+                                name: c.name,
+                                start: c.start_time[index],
+                                end: c.end_time[index],
+                                room: c.classroom,
+                                teacher: c.teacher,
+                                exam1: c.exam_1_timestamp,
+                                exam2: c.exam_2_timestamp,
+                                retake: c.re_take_exam_timestamp,
+                                final: c.final_exam_timestamp
+                            })
+                        })
+                    })
+                }else{
+                    throw new Error('Error fetching classes');
+                }
+            }catch(err){
+                console.error(err);
+                // TODO - show error message
+                this.classes = [];
+            }
+            this.render = true;
+        },
+        getTime(isoDate : string){
+            const date = new Date(isoDate);
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            return `${hours}:${minutes}`;
         }
     }
 }
@@ -125,8 +169,7 @@ export default {
         font-size: 1rem !important;
     }
 }
-.bold-red{
-    font-weight: bold !important;
-    color: var(--danger-red) !important;
+.v-table{
+    color: var(--dark-blue);
 }
 </style>
