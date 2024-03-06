@@ -4,7 +4,7 @@
         <v-card-title style="text-wrap: balance;">
             <h3 class="text-center font-blue bold">Detalhes do Evento</h3>
         </v-card-title>
-        <v-card-actions>
+        <v-card-actions v-if="allowEdit">
             <v-row no-gutters justify="space-around">
                 <!-- TODO - create a new function for the @click event -->
                 <v-btn  :text="enableEditing ? 'Cancelar' : 'Editar'" class="px-3"
@@ -68,7 +68,7 @@
                                 @update:model-value="e => localEvent.event_name = e" />
                 
                 <v-switch :model-value="localEvent.is_mandatory" label="Presença obrigatória?"
-                            @change="e => {localEvent.is_mandatory = e.target.checked}"
+                            @change="(e : any) => {localEvent.is_mandatory = e.target.checked}"
                             color="var(--dark-blue)" />
                 
                 <v-text-field :model-value="localEvent.start_timestamp"
@@ -99,7 +99,7 @@
                         prepend-icon="mdi-phone" append-icon="mdi-email" 
                         style="padding: 0; width: fit-content;"
                         color="var(--dark-blue)"
-                        @change="e => contactType = e.target.checked ? 'email' : 'phone'" />
+                        @change="(e : any) => contactType = e.target.checked ? 'email' : 'phone'" />
 
                 <v-row no-gutters justify="end">
                     <v-btn text="Salvar"
@@ -129,17 +129,18 @@
 </template>
 
 <script lang="ts">
-import { getEvent, updateEvent, type IEvent, deleteEvent } from '@/https/events';
+import { getEvent, updateEvent, deleteEvent } from '@/https/events';
+import type { IContactType, IEventGetBody, IEvent } from '@/interfaces/Https';
 export default{
     name: 'event-edit',
     props:{
-        event: {type: Object, required: true}
+        event: {type: Object, required: true},
+        allowEdit: {type: Boolean, required: false, default: true}
     },
     data(){
         return{
-            // TODO - set the type of localEvent
-            localEvent:{},
-            contactType:"" as 'phone' | 'email',
+            localEvent:{} as IEventGetBody,
+            contactType: "email" as IContactType,
             enableEditing: false,
             enableDelete: false,
         }
@@ -151,12 +152,13 @@ export default{
     },
     methods: {
         fetchEvent(){
-
-            const id = this.event.id;
+            const id = this.event._id;
             getEvent(id).then(r => {
                 this.localEvent = r.response;   
-                this.localEvent.is_mandatory = JSON.parse(this.localEvent.is_mandatory)
-                this.contactType = this.localEvent.event_contact_main.includes('@') ? 'email' : 'phone'
+                this.localEvent.is_mandatory = JSON.parse(this.localEvent.is_mandatory);
+                this.contactType = this.localEvent.event_contact_main.includes('@') 
+                                    ? "email"
+                                    : "phone";
             }).catch(e => {
                 console.log(e)
                 //show error message    
