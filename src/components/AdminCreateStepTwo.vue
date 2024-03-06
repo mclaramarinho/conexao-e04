@@ -20,9 +20,7 @@
                             />
                     </v-col>
                     <v-col v-if="otpValid" cols="1" class="text-center">
-                        <!-- TODO - Create class for the style attr -->
-                        <v-icon size="large" class="top-50 translate-middle-y" 
-                                style="font-size: 2.5rem;" color="var(--green)" icon="mdi-check"></v-icon>
+                        <v-icon size="large" class="top-50 translate-middle-y font-25rem" color="var(--green)" icon="mdi-check" />
                     </v-col>
                 </v-row>
             </v-form>
@@ -144,3 +142,9 @@ export default{
         }
     }
 </script>
+
+<style>
+.font-25rem{
+    font-size: 2.5rem !important;
+}
+</style>
