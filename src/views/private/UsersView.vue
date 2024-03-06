@@ -25,7 +25,7 @@ import { admin_get_all, owner_delete_admin } from '@/https/admin';
 import { useUserInfoStore } from '@/stores/userInfo';
 import DialogConfirmAction from '@/components/smaller_components/dialogs/DialogConfirmAction.vue';
 import { login } from '@/firebase/authorization';
-import type { IUser } from '@/interfaces/IUser';
+import type { IUser } from '@/interfaces/Https';
 export default {
     name: 'users-view',
     components:{

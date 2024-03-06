@@ -53,7 +53,7 @@
 <script lang="ts">
 import { getAllClasses, deleteClass } from '@/https/classes';
 import type { IHTTPResponse } from '@/https/setup';
-import type IClassesView from '@/interfaces/IClassesView';
+import type {IClassesGetBody} from '@/interfaces/Https';
 import MultiuseDataTable from '@/components/MultiuseDataTable.vue';
 import DialogDeleteItem from '@/components/smaller_components/dialogs/DialogDeleteItem.vue';
 import ClassEdit from '@/components/smaller_components/dialogs/ClassEdit.vue';
@@ -64,7 +64,7 @@ export default {
     },
     data(){
         return {
-            classes: [] as Array<IClassesView>,
+            classes: [] as Array<IClassesGetBody>,
             loadingTable: false,
             showDeleteDialog: false,
             showEditDialog: false,
@@ -147,7 +147,7 @@ export default {
                         retakeExamDate: fRetakeExamDate,
                         finalExamDate: fFinalExam,
                         observations: item.observations
-                    } as IClassesView;
+                    } as IClassesGetBody;
                 })
             }else{
                 console.log(response);

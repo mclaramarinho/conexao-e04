@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import type { IUser } from "@/interfaces/IUser";
+import type { IUser } from "@/interfaces/Https";
 import {admin_get_one} from "../../https/admin"
 import NavDrawer from "@/components/smaller_components/NavDrawer.vue";
 import DashBoard from "./DashBoard.vue";
@@ -28,6 +28,7 @@ export default {
         return {
             admin: {} as IUser,
             currentView: useDashboardHistory().previous || 1 as number, // 1 to 5
+
             // TODO - Refactor these 2 props below to be in an Array<Object> format
             sectionTitle: "" as string,
             tabs: [] as Array<string>
