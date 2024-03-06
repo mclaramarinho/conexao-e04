@@ -1,75 +1,66 @@
-<!-- TODO - change the calendar component to use the ScheduleX calendar component -->
-
 <template>
-  <v-sheet max-height="100vh" position="relative" class="w-90 h-100 overflow-y-auto mx-auto">
-      <v-calendar v-model:model-value="value" class="position-relative mx-auto"
-                  :weekdays="weekday" view-mode="month" hide-week-number />
-  </v-sheet>
+ <calendar-component v-if="render"
+                      :allow-edit="allowEdit"
+                     :multiple-calendars="multipleCalendars" 
+                     :calendars="calendars"
+                     :events="events"
+                     :event-calendar-logic="eventCalendarLogic" />
   </template>
 
 <script lang="ts">
-    import { useDate } from 'vuetify'
-  
-    export default {
-      data: () => ({
-        type: 'month' as 'month' | 'week' | 'day',
-        types: ['month', 'week', 'day'],
-        weekday: [0, 1, 2, 3, 4, 5, 6],
-        weekdays: [
-          { title: 'Sun - Sat', value: [0, 1, 2, 3, 4, 5, 6] },
-          { title: 'Mon - Sun', value: [1, 2, 3, 4, 5, 6, 0] },
-          { title: 'Mon - Fri', value: [1, 2, 3, 4, 5] },
-          { title: 'Mon, Wed, Fri', value: [1, 3, 5] },
-        ],
-        value: [new Date()],
-        events: [] as  Array<{ title: string, start: Date, end: Date, color: string, allDay: boolean }>,
-        colors: ['blue', 'indigo', 'deep-purple', 'cyan', 'green', 'orange', 'grey darken-1'],
-        titles: ['Meeting', 'Holiday', 'PTO', 'Travel', 'Event', 'Birthday', 'Conference', 'Party'],
-      }),
-      mounted () {
-        const adapter = useDate()
-        this.getEvents({ start: adapter.startOfDay(adapter.startOfMonth(new Date())), end: adapter.endOfDay(adapter.endOfMonth(new Date())) })
-      },
-      methods: {
-        getEvents ({ start, end } : any) {
-          const events = []
-  
-          const min = start
-          const max = end
-          const days = (max.getTime() - min.getTime()) / 86400000
-          const eventCount = this.rnd(days, days + 20)
-  
-          for (let i = 0; i < eventCount; i++) {
-            const allDay = this.rnd(0, 3) === 0
-            const firstTimestamp = this.rnd(min.getTime(), max.getTime())
-            const first = new Date(firstTimestamp - (firstTimestamp % 900000))
-            const secondTimestamp = this.rnd(2, allDay ? 288 : 8) * 900000
-            const second = new Date(first.getTime() + secondTimestamp)
-  
-            events.push({
-              title: this.titles[this.rnd(0, this.titles.length - 1)],
-              start: first,
-              end: second,
-              color: this.colors[this.rnd(0, this.colors.length - 1)],
-              allDay: !allDay,
-            })
-          }
-  
-          this.events = events
-        },
-        getEventColor (event : any) {
-          return event.color
-        },
-        rnd (a : any, b : any) {
-          return Math.floor((b - a + 1) * Math.random()) + a
-        },
-      },
-    }
-  </script>
+import CalendarComponent from '@/components/CalendarComponent.vue'
+import type { IEventGetBody } from '@/interfaces/Https'
+import { getAllEvents } from '@/https/events'
 
-<style scoped>
-.v-calendar-month__day{
-  min-height: none !important;
-  max-height: 20px !important;
+export default {
+components:{
+  CalendarComponent
+},
+  data: () => ({
+    allowEdit: false,
+    multipleCalendars: true,
+    calendars:{
+      mandatoryEvents: {
+          colorName: 'mandatory-events',
+          lightColors:{
+              main: '#7a163c',
+              container: '#7a163c',
+              onContainer: '#ffffff',
+          }
+      },
+      optionalEvents:{
+          colorName: 'optional-events',
+          lightColors:{
+              main: '#54BB48',
+              container: '#54BB48',
+              onContainer: '#ffffff',
+          }
+      },
+    },
+    eventCalendarLogic: (event : IEventGetBody) => JSON.parse(event.is_mandatory) ? 'mandatoryEvents' : 'optionalEvents',
+    events: [] as Array<IEventGetBody>,
+    render: false
+  }),
+  async created () {
+    await this.fetchEvents()
+  },
+  methods: {
+    async fetchEvents(){
+      this.render = false;
+        try{
+          const res = await getAllEvents();
+          if (res.code === 200) {
+              this.events = res.response;
+          }else{
+            throw new Error('Error fetching events');
+          }
+        }catch(err){
+          console.log(err);
+          // TODO - show error message
+          this.events = [];
+        }
+      this.render = true;
+    }
+  },
 }
-</style>
+</script>
