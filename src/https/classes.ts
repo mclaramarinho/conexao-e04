@@ -1,27 +1,13 @@
 import { useUserInfoStore } from "@/stores/userInfo";
-import { BASE_URL, headers } from "./setup";
+import { BASE_URL, createOptions } from "./setup";
 import type { IHTTPResponse } from "./setup";
-
-// TODO - move to an HTTP Interfaces file
-export interface IClass{
-    name: string;
-    days: string[];
-    startTime: string[];
-    endTime: string[];
-    classroom: string;
-    teacher: string;
-    exam1Date: string;
-    exam2Date: string;
-    retakeExamDate: string;
-    finalExamDate: string;
-    observations: string | null;
-}
+import type { IClass, IClassPostBody } from "@/interfaces/Https";
 
 export async function createClass(data : IClass) : Promise<IHTTPResponse> {
     const serviceURL = `${BASE_URL}/class/create`;
     const res = {} as IHTTPResponse;
-    console.log(data);
     
+    // TODO - Check if these 2 are really necessary
     const newStartTime = data.startTime.map(time => {
         const arr = time.split(':');
         console.log(arr);
@@ -38,7 +24,6 @@ export async function createClass(data : IClass) : Promise<IHTTPResponse> {
         return isoDate.toISOString()
     });
  
-    // TODO - create a type for the body
     const body = {
         name: data.name,
         days: data.days,
@@ -53,14 +38,10 @@ export async function createClass(data : IClass) : Promise<IHTTPResponse> {
         observations: data.observations,
         created_by: useUserInfoStore().UID,
         last_edited_by: useUserInfoStore().UID
-    };
+    } as IClassPostBody;
    
     try{
-        const options = {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(body)
-        } as RequestInit;
+        const options = createOptions({method: 'POST'}, body);
         
         res.data = options;
 
@@ -81,11 +62,11 @@ export async function createClass(data : IClass) : Promise<IHTTPResponse> {
 
 export async function getAllClasses() : Promise<IHTTPResponse>{
     const serviceURL = `${BASE_URL}/class/all`;
-    const options = {
-        method: 'GET',
-        headers: headers
-    } as RequestInit;
+
     const res = {} as IHTTPResponse;
+    
+    const options = createOptions({method: 'GET'}, undefined);
+    
     res.data = options;
     try{
         const req = await fetch(serviceURL, options);
@@ -104,10 +85,7 @@ export async function getAllClasses() : Promise<IHTTPResponse>{
 export async function deleteClass(id : string) : Promise<IHTTPResponse>{
     const serviceURL = `${BASE_URL}/class/delete/${id}`;
     const res = {} as IHTTPResponse;
-    const options = {
-        method: 'DELETE',
-        headers: headers
-    } as RequestInit;
+    const options = createOptions({method: 'DELETE'}, undefined);
     res.data = options;
     try{
         const req = await fetch(serviceURL, options);
@@ -126,26 +104,20 @@ export async function updateClass(data : IClass, id : string) : Promise<IHTTPRes
     const serviceURL = `${BASE_URL}/class/update/${id}`;
     const res = {} as IHTTPResponse;
 
-    // TODO - create a type for the body
     const body = {
         name: data.name,
-        days: data.days,
-        start_time: data.startTime,
-        end_time: data.endTime,
+        days: data.days, start_time: data.startTime, end_time: data.endTime,
         classroom: data.classroom,
         teacher: data.teacher,
-        exam_1_timestamp: data.exam1Date,
+        exam_1_timestamp: data.exam1Date, 
         exam_2_timestamp: data.exam2Date,
         re_take_exam_timestamp: data.retakeExamDate,
         final_exam_timestamp: data.finalExamDate,
         observations: data.observations,
         last_edited_by: useUserInfoStore().UID
-    };
-    const options = {
-        method: 'PUT',
-        headers: headers,
-        body: JSON.stringify(body)
-    } as RequestInit;
+    } as IClassPostBody;
+    
+    const options = createOptions({method: 'PUT'}, body);
     res.data = options;
     try{
         const req = await fetch(serviceURL, options);
@@ -164,10 +136,7 @@ export async function updateClass(data : IClass, id : string) : Promise<IHTTPRes
 export async function getClass(id : string) : Promise<IHTTPResponse>{
     const serviceURL = `${BASE_URL}/class/get/${id}`;
     const res = {} as IHTTPResponse;
-    const options = {
-        method: 'GET',
-        headers: headers
-    } as RequestInit;
+    const options = createOptions({method: 'GET'}, undefined);
     res.data = options;
     try{
         const req = await fetch(serviceURL, options);

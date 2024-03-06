@@ -1,7 +1,7 @@
 import { isLoggedIn } from "@/firebase/authorization";
 import { BASE_URL, headers, type IHTTPResponse } from "./setup";
 import type { User } from "firebase/auth";
-import type { IUser } from "@/interfaces/IUser";
+import type { IUser } from "@/interfaces/Https";
 import { useUserInfoStore } from "@/stores/userInfo";
 
 export async function admin_get_all() : Promise<IHTTPResponse>{

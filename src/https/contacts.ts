@@ -1,15 +1,7 @@
 import { useUserInfoStore } from "@/stores/userInfo";
-import { BASE_URL, headers } from "./setup";
+import { BASE_URL, createOptions } from "./setup";
 import type { IHTTPResponse } from "./setup";
-
-// TODO - move to an HTTP Interfaces file
-export interface IContact {
-    name: string;
-    phoneNumber: string;
-    email: string;
-    whenToContact: string;
-};
-
+import type { IContact, IContactPostBody, IContactPutBody } from "@/interfaces/Https";
 
 export async function createContact(data : IContact) : Promise<IHTTPResponse>{
     const serviceURL = `${BASE_URL}/contact/create`;
@@ -20,14 +12,11 @@ export async function createContact(data : IContact) : Promise<IHTTPResponse>{
         when_to_contact: data.whenToContact,
         created_by: useUserInfoStore().UID,
         last_edited_by: useUserInfoStore().UID
-    }
+    } as IContactPostBody;
+
     const res = {} as IHTTPResponse;
     try{
-        const options = {
-            method: "POST",
-            headers: headers,
-            body: JSON.stringify(body)
-        } as RequestInit;
+        const options = createOptions({method: 'POST'}, body);
 
         res.data = options;
 
@@ -50,10 +39,7 @@ export async function createContact(data : IContact) : Promise<IHTTPResponse>{
 export async function getContacts() : Promise<IHTTPResponse>{
     const serviceURL = `${BASE_URL}/contact/all`;
     const res = {} as IHTTPResponse;
-    const options = {
-        method: 'GET',
-        headers: headers
-    } as RequestInit;
+    const options = createOptions({method: 'GET'}, undefined);
     res.data = options;
 
     try{
@@ -71,10 +57,7 @@ export async function getContacts() : Promise<IHTTPResponse>{
 
 export async function deleteContact(id : string) : Promise<IHTTPResponse>{
     const serviceURL = `${BASE_URL}/contact/delete/${id}`;
-    const options = {
-        method: 'DELETE',
-        headers: headers
-    } as RequestInit;
+    const options = createOptions({method: 'DELETE'}, undefined);
 
     const res = {} as IHTTPResponse;
     res.data = options;
@@ -102,15 +85,11 @@ export async function updateContact(id : string, data : IContact) : Promise<IHTT
         when_to_contact: data.whenToContact,
         last_edited_by: useUserInfoStore().UID,
         last_edited_at: new Date().toISOString()
-    };
+    } as IContactPutBody;
 
     const res = {} as IHTTPResponse;
     try{
-        const options = {
-            method: 'PUT',
-            headers: headers,
-            body: JSON.stringify(body)
-        } as RequestInit;
+        const options = createOptions({method: 'PUT'}, body);
         res.data = options;
 
         const req = await fetch(serviceURL, options);

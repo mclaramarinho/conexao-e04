@@ -1,7 +1,8 @@
-import {BASE_URL, headers} from './setup';
+import {BASE_URL, createOptions } from './setup';
 import { useAccountCreationStore } from '@/stores/accountCreation';
 import type { IHTTPResponse } from './setup';
 import { useUserInfoStore } from '@/stores/userInfo';
+import type { ICodePostBody, IUserRole } from '@/interfaces/Https';
 
 export async function validateCode() : Promise<IHTTPResponse>{
     const res = {} as IHTTPResponse;
@@ -9,11 +10,7 @@ export async function validateCode() : Promise<IHTTPResponse>{
         const code = useAccountCreationStore().otp;
         const REQ_URL = `${BASE_URL}/code/validate`;
         const body = JSON.stringify({code});
-        const options = {
-            method: 'POST',
-            headers: headers,
-            body: body
-        } as RequestInit;
+        const options = createOptions({method: 'POST'}, body);
         res.data = options;
 
         const req = await fetch(REQ_URL, options);
@@ -34,10 +31,7 @@ export async function getValidCodes(isExpired : boolean) : Promise<IHTTPResponse
     const uid = useUserInfoStore().UID;
     const serviceUrl = `${BASE_URL}/code/all/${uid}/${isExpired}`;
     const res = {} as IHTTPResponse;
-    const options = {
-        method: 'GET',
-        headers: headers
-    } as RequestInit;
+    const options = createOptions({method: 'GET'}, undefined);
     res.data = options;
     try{
         const req = await fetch(serviceUrl, options);
@@ -55,22 +49,18 @@ export async function getValidCodes(isExpired : boolean) : Promise<IHTTPResponse
     }
 }
 
-export async function createNewCode(role : 'owner' | 'admin') : Promise<IHTTPResponse>{
+export async function createNewCode(role : IUserRole) : Promise<IHTTPResponse>{
     const uid = useUserInfoStore().UID;
-    const body = {
-        uid: uid,
-        role: role
-    };
+
+    const body = { uid: uid, role: role } as ICodePostBody;
+
     const res = {} as IHTTPResponse;
     const serviceUrl = `${BASE_URL}/code/create`
     
 
     try{
-        const options = {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(body)
-        } as RequestInit;
+        const options = createOptions({method: 'POST'}, body);
+
         res.data = options;
         const req = await fetch(serviceUrl, options);
         const resBody = await req.json();
@@ -88,11 +78,7 @@ export async function createNewCode(role : 'owner' | 'admin') : Promise<IHTTPRes
 export async function deleteCode(code : string) : Promise<IHTTPResponse>{
     const uid = useUserInfoStore().UID;
     const serviceUrl = `${BASE_URL}/code/delete/${code}/${uid}`;
-    const options = {
-        method: 'DELETE',
-        headers: headers
-    } as RequestInit;
-
+    const options = createOptions({method: 'DELETE'}, undefined);
     const res = {} as IHTTPResponse;
 
     res.data = options;

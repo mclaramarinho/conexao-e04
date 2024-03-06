@@ -1,27 +1,12 @@
 import { useUserInfoStore } from "@/stores/userInfo";
-import { BASE_URL, headers } from "./setup";
+import { BASE_URL, createOptions, headers } from "./setup";
 import type { IHTTPResponse } from "./setup";
-
-// TODO - move to an HTTP Interfaces file
-export interface IEvent {
-    eventName: string;
-    isMandatory: boolean;
-    eventDescription: string;
-    eventStart: string;
-    eventEnd: string;
-    organizer: string | null;
-    contact: string | null;
-    location: string | null;
-    // TODO - Create an interface for contactType
-    contactType: "phone" | "email";
-}
-
+import type { IEvent, IEventPostBody, IEventPutBody } from "@/interfaces/Https";
 
 export async function createEvent(data : IEvent) : Promise<IHTTPResponse>{
     const res = {} as IHTTPResponse;
     try{
         const serviceURL = `${BASE_URL}/events/create`;
-        // TODO - create an interface for the body
         const body = {
             start_timestamp: data.eventStart,
             end_timestamp: data.eventEnd,
@@ -33,13 +18,9 @@ export async function createEvent(data : IEvent) : Promise<IHTTPResponse>{
             is_mandatory: data.isMandatory.toString(),
             created_by: useUserInfoStore().UID,
             last_edited_by: useUserInfoStore().UID,
-        }
+        } as IEventPostBody;
         
-        const options = {
-            method: 'POST',
-            body: JSON.stringify(body),
-            headers: headers,
-        } as RequestInit;
+        const options = createOptions({method: 'POST'}, body);
         
         res.data = options;
         
@@ -61,10 +42,7 @@ export async function createEvent(data : IEvent) : Promise<IHTTPResponse>{
 export async function getAllEvents() : Promise<IHTTPResponse>{
     const serviceURL = `${BASE_URL}/events/all`
     const res = {} as IHTTPResponse;
-    const options = {
-        method: 'GET',
-        headers: headers,
-    } as RequestInit;
+    const options = createOptions({method: 'GET'}, undefined);
     res.data = options;
 
     try{
@@ -84,10 +62,7 @@ export async function getAllEvents() : Promise<IHTTPResponse>{
 export async function getEvent(id : string) : Promise<IHTTPResponse>{
     const serviceURL = `${BASE_URL}/events/get/${id}`
     const res = {} as IHTTPResponse;
-    const options = {
-        method: 'GET',
-        headers: headers
-    } as RequestInit;
+    const options = createOptions({method: 'GET'}, undefined);
     res.data = options;
 
     try{
@@ -106,10 +81,7 @@ export async function getEvent(id : string) : Promise<IHTTPResponse>{
 export async function deleteEvent(id : string) : Promise<IHTTPResponse>{
     const serviceURL = `${BASE_URL}/events/delete/${id}`
     const res = {} as IHTTPResponse;
-    const options = {
-        method: 'DELETE',
-        headers: headers
-    } as RequestInit;
+    const options = createOptions({method: 'DELETE'}, undefined);
     res.data = options;
 
     try{
@@ -128,7 +100,6 @@ export async function updateEvent(data : IEvent, id : string) : Promise<IHTTPRes
     const serviceURL = `${BASE_URL}/events/update/${id}`
     const res = {} as IHTTPResponse;
     
-    // TODO - create an interface for the body
     const body = {
         start_timestamp: data.eventStart,
         end_timestamp: data.eventEnd,
@@ -139,14 +110,10 @@ export async function updateEvent(data : IEvent, id : string) : Promise<IHTTPRes
         event_contact_main: data.contact,
         is_mandatory: data.isMandatory.toString(),
         last_edited_by: useUserInfoStore().UID,
-    };
+    } as IEventPutBody;
 
     // TODO - Surround with try-catch block
-    const options = {
-        method: 'PUT',
-        headers: headers,
-        body: JSON.stringify(body)
-    } as RequestInit;
+    const options = createOptions({method: 'PUT'}, body);
     res.data = options;
 
     try{
