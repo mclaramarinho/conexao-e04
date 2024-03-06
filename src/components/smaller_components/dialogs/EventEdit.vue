@@ -155,7 +155,7 @@ export default{
             const id = this.event._id;
             getEvent(id).then(r => {
                 this.localEvent = r.response;   
-                this.localEvent.is_mandatory = JSON.parse(this.localEvent.is_mandatory);
+                this.localEvent.is_mandatory = JSON.parse(this.localEvent.is_mandatory.toString());
                 this.contactType = this.localEvent.event_contact_main.includes('@') 
                                     ? "email"
                                     : "phone";
