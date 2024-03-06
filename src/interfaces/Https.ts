@@ -1,9 +1,9 @@
 export interface IUser{
-    firebase_uid: String | null,
-    name: String | null,
-    email: String | null,
-    role: String | null,
-    last_login: String | null,
+    firebase_uid: String | null;
+    name: String | null;
+    email: String | null;
+    role: String | null;
+    last_login: String | null;
     creation_date_timestamp: String | null
 };
 
@@ -55,9 +55,7 @@ export interface ICodePostBody{
     role: IUserRole;
 };
 
-export interface IUserRole{
-    role: 'owner' | 'admin';
-}
+export type IUserRole = 'owner' | 'admin';
 
 export interface IContact {
     name: string;
@@ -95,6 +93,21 @@ export interface IEvent {
     location: string | null;
     contactType: IContactType;
 }
+export interface IEventGetBody{
+    "_id": string;
+    start_timestamp: string;
+    end_timestamp: string;
+    event_name: string;
+    event_location: string;
+    description: string;
+    organizer: string;
+    event_contact_main: string;
+    is_mandatory: boolean;
+    created_by: string;
+    created_at_timestamp: string;
+    last_edited_by: string;
+    last_edited_at: string;
+};
 
 export interface IEventPostBody{
     start_timestamp: string;
@@ -121,9 +134,7 @@ export interface IEventPutBody{
     last_edited_by: string;
 };
 
-export interface IContactType{
-    contactType: "phone" | "email";
-};
+export type IContactType = "phone" | "email";
 
 export interface IFaq{
     question: string;
