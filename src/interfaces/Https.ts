@@ -63,7 +63,17 @@ export interface IContact {
     email: string;
     whenToContact: string;
 };
-
+export interface IContactGetBody{
+    '_id': string;
+    name: string;
+    phone_number: string;
+    email: string;
+    when_to_contact: string;
+    created_by: string;
+    created_at_timestamp: string;
+    last_edited_by: string;
+    last_edited_at: string;
+};
 export interface IContactPostBody{
     name: string;
     phone_number: string;
@@ -140,7 +150,15 @@ export interface IFaq{
     question: string;
     answer: string;
 };
-
+export interface IFaqGetBody{
+    '_id': string;
+    question: string;
+    answer: string;
+    created_by: string;
+    created_at_timestamp: string;
+    last_edited_by: string;
+    last_edited_at: string;
+};
 export interface IFaqPostBody{
     question: string;
     answer: string;
