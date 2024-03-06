@@ -1,5 +1,7 @@
 <template>
-    <v-container fluid>
+    <circular-loader v-if="!render" />
+
+    <v-container fluid v-if="render">
         <v-row>
             <v-col cols="12">
                 <v-expansion-panels variant="popout">
@@ -16,53 +18,39 @@
 </template>
 
 <script lang="ts">
+import { getAllFAQs } from '@/https/faqs';
+import type { IFaqGetBody } from '@/interfaces/Https';
+import CircularLoader from '@/components/smaller_components/loaders/CircularLoader.vue';
 export default {
     name: 'FaqSection',
+    components:{
+        CircularLoader
+    },
     data() {
         return {
-            // TODO - replace with data brought from the api
-            faq: [
-                {
-                    question: 'What is the purpose of this website?',
-                    answer: 'This website is a project for the course "Web Development" at the University of Applied Sciences in Salzburg. The goal is to create a website that is easy to use and provides useful information for students.'
-                },
-                {
-                    question: 'How can I contact the developers?',
-                    answer: 'You can contact the developers via email at '
-                },
-                {
-                    question: 'How can I contribute to the website?',
-                    answer: 'You can contribute to the website by creating a pull request on the GitHub repository.'
-                },
-                {
-                    question: 'How can I report a bug?',
-                    answer: 'You can report a bug by creating an issue on the GitHub repository.'
-                },
-                {
-                    question: 'How can I contact the developers?',
-                    answer: 'You can contact the developers via email at '
-                },
-                {
-                    question: 'How can I contribute to the website?',
-                    answer: 'You can contribute to the website by creating a pull request on the GitHub repository.'
-                },
-                {
-                    question: 'How can I report a bug?',
-                    answer: 'You can report a bug by creating an issue on the GitHub repository.'
-                },
-                {
-                    question: 'How can I contact the developers?',
-                    answer: 'You can contact the developers via email at '
-                },
-                {
-                    question: 'How can I contribute to the website?',
-                    answer: 'You can contribute to the website by creating a pull request on the GitHub repository.'
-                },
-                {
-                    question: 'How can I report a bug?',
-                    answer: 'You can report a bug by creating an issue on the GitHub repository.'
+            faq: [] as Array<IFaqGetBody>,
+            render: false
+        }
+    },
+    async created(){
+        await this.fetchFaq();
+    },
+    methods:{
+        async fetchFaq(){
+            this.render = false;
+            try{
+                const res = await getAllFAQs();
+                if(res.code === 200){
+                    this.faq = res.response;
+                }else{
+                    throw new Error('Failed to fetch FAQs');
                 }
-            ]
+            }catch(err){
+                console.error(err);
+                //TODO - show error message
+                this.faq = [];
+            }
+            this.render = true;
         }
     }
 }

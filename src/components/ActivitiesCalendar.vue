@@ -1,8 +1,6 @@
 <template>
-  <v-row no-gutters class="position-relative h-100" align="center" v-if="!render">
-    <v-progress-circular indeterminate class="mx-auto"></v-progress-circular>
-  </v-row>
- <calendar-component v-if="render"
+  <circular-loader v-if="!render" />
+  <calendar-component v-if="render"
                       :allow-edit="allowEdit"
                      :multiple-calendars="multipleCalendars" 
                      :calendars="calendars"
@@ -16,10 +14,10 @@ import CalendarComponent from '@/components/CalendarComponent.vue'
 import type { IEventGetBody } from '@/interfaces/Https'
 import { getAllEvents } from '@/https/events'
 import { calendars as cal, eventCalendarLogic as logic } from '@/stores/calendars'
-
+import CircularLoader from '@/components/smaller_components/loaders/CircularLoader.vue'
 export default {
 components:{
-  CalendarComponent
+  CalendarComponent, CircularLoader
 },
   data: () => ({
     allowEdit: false,
