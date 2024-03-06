@@ -2,8 +2,9 @@ import { a } from "./config";
 import { browserLocalPersistence, updateProfile, createUserWithEmailAndPassword, setPersistence, type User, type UserCredential, deleteUser, updateEmail } from "firebase/auth";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useUserInfoStore } from "@/stores/userInfo";
-import type { IUser } from "@/interfaces/IUser";
+import type { IUser } from "@/interfaces/Https";
 import { admin_delete, admin_get_one, admin_update } from "@/https/admin";
+import type { IFirebaseGetCredentials, IFirebaseUserUpdate } from "@/interfaces/ResponseObjects";
 
 
 export async function register(email: string, password: string, name : string) : Promise<boolean | void>{
@@ -24,22 +25,18 @@ async function updateProfileName(name: string) : Promise<boolean>{
     }).then(() => {return true}).catch((error) => {console.log(error); return false});
 }
 
-export async function updateUser(data : {name: string, email : string}, pswd : string) : Promise<Object>{
-    // TODO - Create an interface for this response object
+export async function updateUser(data : {name: string, email : string}, pswd : string) : Promise<IFirebaseUserUpdate>{
     const response = {
-        nameUpdated: false,
-        emailUpdated: false,
-        error: {
-            isError: false,
-            code: '' as string,
-            message: '' as string
+        nameUpdated: false, emailUpdated: false, dbUpdated: false,
+        error: { 
+            isError: false, code: '', message: ''
         },
-        dbUpdated: false
-    };
+    } as IFirebaseUserUpdate;
     try{
         const cred = await getUserCreds(pswd);
-        const credEmail = (cred as UserCredential).user.email;
-        const credName = (cred as UserCredential).user.displayName;
+        if(cred.error.isError){throw new Error('invalid-user-cred/error')};
+        const credEmail = cred.credentials?.user.email;
+        const credName = cred.credentials?.user.displayName;
         
         if(credName === data.name && credEmail === data.email){throw new Error("no-data-to-update")};
         
@@ -47,6 +44,8 @@ export async function updateUser(data : {name: string, email : string}, pswd : s
             updateEmail(a.currentUser as User, data.email).then(r => {
                 response.emailUpdated = true;
             }).catch(e => {
+                // TODO - create an interface with all the probable errors
+                if(e.code === 'auth/operation-not-allowed'){throw new Error("auth/operation-not-allowed")};
                 throw new Error("email/not-updated/error");
             });
         }
@@ -82,8 +81,7 @@ export async function updateUser(data : {name: string, email : string}, pswd : s
     }catch(err : any){
         response.error.isError = true;
         const msg = err.message;
-        if(msg !== 'no-data-to-update' && msg !== `email/not-updated/error` && msg !== "name/not-updated/error" && msg !== 'db-not-updated/error'){
-            response.error.code = 'invalid-user-cred/error';
+        if(msg === 'invalid-user-cred/error'){
             response.error.message = "Error fetching user credentials";
         }
 
@@ -148,20 +146,28 @@ export async function isLoggedIn() : Promise<boolean | User>{
     })
 }
 
-export async function getUserCreds(pswd:string) : Promise<UserCredential|Object|undefined>{
-    // TODO - create a response object interface
+export async function getUserCreds(pswd:string) : Promise<IFirebaseGetCredentials>{
+    const response = {
+       error: {
+              isError: false,
+              code: '',
+              message: ''
+         },
+         credentials: null
+    } as IFirebaseGetCredentials;
     try{
         const user = await isLoggedIn();
         const cred = await signInWithEmailAndPassword(a, ((user as User).email as string), pswd);
         if(cred){
-            return cred as UserCredential;
+            response.credentials = cred as UserCredential;
         }
     }catch(err){
-        return {
-            error: err
-        } as Object
+        response.error.isError = true;
+        response.error.code = 'invalid-user-cred/error';
+        response.error.message = "Error fetching user credentials";
     }
-    return undefined;
+    
+    return response;
 }
 
 export async function deleteAccount(pswd : string, fromLogin = false) : Promise<Boolean>{
