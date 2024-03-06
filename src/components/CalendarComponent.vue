@@ -1,4 +1,10 @@
 <template>
+    <v-container fluid>
+        <v-row no-gutters justify="end">
+            <v-btn icon="mdi-refresh" @click="$emit('refresh')" class="font-12" />
+        </v-row>
+    </v-container>
+
     <schedule-x-calendar v-if="render" :calendar-app="app as CalendarApp" />
 
     <v-dialog v-model="openDialog" max-width="500px">
@@ -120,6 +126,8 @@ export default{
         },
         async setCalendarApp(){
             return new Promise((resolve, reject) => {
+                
+                
                 this.render = false;
                 const fEvents = this.events.map(e => {
                     return {
@@ -133,11 +141,12 @@ export default{
                     }
                 })
                 const v = [] as Array<View>;
+                    console.log(this.viewModes);
+                    
                 this.viewModes.includes('month-grid') && v.push(viewMonthGrid);
                 this.viewModes.includes('month-agenda') && v.push(viewMonthAgenda);
                 this.viewModes.includes('week') && v.push(viewWeek);
                 this.viewModes.includes('day') && v.push(viewDay);
-
                 const a = createCalendar({
                     datePicker: {
                         selectedDate: new Date().toISOString().split('T')[0]
@@ -164,7 +173,8 @@ export default{
                 resolve(null)
             });
         }
-    }
+    },
+    emits: ['refresh']
     
     
 }
