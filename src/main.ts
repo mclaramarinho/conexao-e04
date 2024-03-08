@@ -6,7 +6,6 @@ import 'vuetify/styles'
 import './assets/main.css'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
 import '@mdi/font/css/materialdesignicons.css'
-import { VCalendar } from 'vuetify/labs/VCalendar'
 import { createPinia } from 'pinia'
 
 const pinia = createPinia()
@@ -19,9 +18,6 @@ const vuetify = createVuetify({
             sets: {
                 mdi
             },
-        },
-        components: {
-            VCalendar,
         },
     }
 );
