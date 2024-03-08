@@ -1,5 +1,5 @@
 import { a } from "./config";
-import { browserLocalPersistence, updateProfile, createUserWithEmailAndPassword, setPersistence, type User, type UserCredential, deleteUser, updateEmail } from "firebase/auth";
+import { browserLocalPersistence, updateProfile, createUserWithEmailAndPassword, setPersistence, type User, type UserCredential, deleteUser, updateEmail, signOut } from "firebase/auth";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useUserInfoStore } from "@/stores/userInfo";
 import type { IUser } from "@/interfaces/Https";
@@ -9,8 +9,8 @@ import type { IFirebaseGetCredentials, IFirebaseUserUpdate } from "@/interfaces/
 
 export async function register(email: string, password: string, name : string) : Promise<boolean | void>{
     try {
-        const created = await createUserWithEmailAndPassword(a, email, password)
-        await updateProfileName(created, name);
+        await createUserWithEmailAndPassword(a, email, password)
+        await updateProfileName(name);
         return true;
     } catch (error) {
         return false;
@@ -18,11 +18,16 @@ export async function register(email: string, password: string, name : string) :
 }
 
 async function updateProfileName(name: string) : Promise<boolean>{
-    // TODO - refactor to use try-catch structure
-    return updateProfile(a.currentUser as User, { 
-        displayName:name,
-        photoURL: ""
-    }).then(() => {return true}).catch((error) => {console.log(error); return false});
+    try{
+        await updateProfile(a.currentUser as User, {
+            displayName: name,
+            photoURL: ""
+        });
+        return true;
+    }catch(e){
+        console.log(e);
+        return false;
+    }
 }
 
 export async function updateUser(data : {name: string, email : string}, pswd : string) : Promise<IFirebaseUserUpdate>{
@@ -44,7 +49,6 @@ export async function updateUser(data : {name: string, email : string}, pswd : s
             updateEmail(a.currentUser as User, data.email).then(r => {
                 response.emailUpdated = true;
             }).catch(e => {
-                // TODO - create an interface with all the probable errors
                 if(e.code === 'auth/operation-not-allowed'){throw new Error("auth/operation-not-allowed")};
                 throw new Error("email/not-updated/error");
             });
@@ -79,62 +83,93 @@ export async function updateUser(data : {name: string, email : string}, pswd : s
 
         return response;
     }catch(err : any){
-        response.error.isError = true;
         const msg = err.message;
+        response.error.code = msg;
+        response.error.isError = true;
+       
         if(msg === 'invalid-user-cred/error'){
             response.error.message = "Error fetching user credentials";
         }
 
-        return response
+        throw response
     }
+}
+export async function logout() : Promise<boolean>{
+    return new Promise((resolve, reject) => {
+        signOut(a)
+        .then(() => {
+            resolve(true);
+        })
+        .catch(error => {
+            console.error('Sign-out error:', error);
+            reject(false);
+        });
+    });
 }
 
 export async function login(email: string, password: string) : Promise<boolean>{
-    // TODO - refactor to use try-catch structure
-    return new Promise((res, rej) => {
-        setPersistence(a, browserLocalPersistence).then(() => {
-            signInWithEmailAndPassword(a, email, password).then((cred) => {
-                // check database for user
+    return new Promise((resolve, reject) => {
+        setPersistence(a, browserLocalPersistence)
+        .then(() => {
+            signInWithEmailAndPassword(a, email, password)
+            .then((cred) => {
+                // Check database for user
                 admin_get_one()
-                // if user not in database -> throw error
                 .then(r => {
-                    const body = {
-                        firebase_uid: null,
-                        name: null,
-                        email: null,
-                        role: null,
-                        last_login: new Date().toISOString(),
-                        creation_date_timestamp: null
-                    } as IUser;
-            
-                    admin_update(body).then(r => {
-                        res(true)
-                    }).catch(e => {
-                        throw new Error('db-not-updated/error');
-                    })
+                    if(r.code === 200){
+                        const body = {
+                            firebase_uid: null,
+                            name: null,
+                            email: null,
+                            role: null,
+                            last_login: new Date().toISOString(),
+                            creation_date_timestamp: null
+                        } as IUser;
+                        admin_update(body)
+                        .then((r) => {
+                            console.log(r);
+                            
+                            resolve(true);
+                        })
+                        .catch(err => {
+                            // Handle database update error
+                            console.error('Error updating database:', err);
+                            reject('db-update-error');
+                        });
+                    }else{
+                        throw new Error('user-not-found/error');
+                    }
                 })
-                // if user in database -> update last login 
                 .catch(e => {
+                    console.log(e);
+                    
+                    // If user in database, update last login
                     deleteAccount(password, true)
-                    .then(r => {
-                        rej(false)
+                    .then(() => {
+                        reject(false);
                     })
-                    .catch(e => {
-                        console.log(e)
-                        rej(false)
-                    })
+                    .catch(err => {
+                        // Handle delete account error
+                        console.error('Error deleting account:', err);
+                        reject(false);
+                    });
                 });
-            }).catch((error) => {
-                rej(false);
             })
-        }).catch((error) => {
-            rej(false);
+            .catch(error => {
+                // Handle sign-in error
+                console.error('Sign-in error:', error);
+                reject(false);
+            });
         })
-    })
+        .catch(error => {
+            // Handle persistence error
+            console.error('Persistence error:', error);
+            reject(false);
+        });
+    });
 }
 
 export async function isLoggedIn() : Promise<boolean | User>{
-    // TODO - refactor to use try-catch structure
     return new Promise((res, rej) => {
         a.onAuthStateChanged((user) => {
             if(user){
