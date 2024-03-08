@@ -6,11 +6,7 @@
 
        <v-card-subtitle>
             <v-row no-gutters>
-                <!-- TODO - Use the existing customized pswd field component -->
-                <v-text-field type="password" :model-value="pswdConfirm"
-                        variant="outlined" label="Confirme sua senha" 
-                        @input="(e : any) => pswdConfirm = e.target.value"
-                        class="w-75 mx-auto mt-3"></v-text-field>
+                <pswd-field :pswd="pswdConfirm" @update:pswd="e => pswdConfirm = e" /> 
             </v-row>
             <slot name="extra" />
        </v-card-subtitle>
@@ -20,6 +16,7 @@
                 <v-btn :color="action.color" size="large" class="font-12" variant="tonal" 
                         @click="action.returnPswd ? $emit(action.action, pswdConfirm) : $emit(action.action, null)">
                     {{ action.label }}
+                    
                 </v-btn>
             </div>
         </v-card-actions>
@@ -27,9 +24,10 @@
 </template>
 
 <script lang="ts">
-
+import PswdField from '@/components/smaller_components/text-fields/PswdField.vue'
 export default {
     name: 'dialog-confirm-action',
+    components: {PswdField},
     props: {
         message: {type: String, default: 'Sua senha é necessária para confirmar essa ação.', required: false},
         actions: {

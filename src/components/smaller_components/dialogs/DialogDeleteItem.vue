@@ -1,8 +1,7 @@
 <template>
     <v-card class="p-4">
         <v-card-title class="mb-3">
-            <!-- TODO - create a global class for text-wrap: balance -->
-            <h3 class="font-blue text-center" style="text-wrap: balance;">Tem certeza que deseja excluir {{what}}?</h3>
+            <h3 class="font-blue text-center text-wrap-balance">Tem certeza que deseja excluir {{what}}?</h3>
        </v-card-title>
 
        <v-card-subtitle>
