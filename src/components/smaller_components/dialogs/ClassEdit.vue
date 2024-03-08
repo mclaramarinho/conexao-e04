@@ -4,64 +4,58 @@
             <h3 class="text-center font-blue" style="text-wrap: balance;">Editar Disciplina</h3>
         </v-card-title>
         <v-card-text>
-            <v-container>
+            <v-form ref="editClassForm">
                 <v-row>
                     <v-col cols="12">
-                        <v-text-field variant="outlined" label="Disciplina" 
-                                :model-value="name"
-                                @input="(e : any) => name = e.target.value">
-                        </v-text-field>
+                        <v-text-field variant="outlined" label="Disciplina" :model-value="classInfo.name" 
+                                :rules="maxChars(20)" validate-on="input"
+                                @input="(e : any) => classInfo.name = e.target.value" />
                     </v-col>
                     <v-col cols="12">
-                        <v-text-field variant="outlined" label="Professor" 
-                                :model-value="teacher"
-                                @input="(e : any) => teacher = e.target.value">
-                        </v-text-field>
+                        <v-text-field variant="outlined" label="Professor" :model-value="classInfo.teacher"
+                                validate-on="input" :rules="maxChars(20)"
+                                @input="(e : any) => classInfo.teacher = e.target.value" />
                     </v-col>
                     <v-col cols="12">
-                        <v-text-field variant="outlined" label="Sala" 
-                                :model-value="classroom"
-                                @input="(e : any) => classroom = e.target.value">
-                        </v-text-field>
+                        <v-text-field variant="outlined" label="Sala" :model-value="classInfo.classroom"
+                                validate-on="input" :rules="maxChars(10, false)"
+                                @input="(e : any) => classInfo.classroom = e.target.value" />
                     </v-col>
                     <v-col cols="12">
-                        <v-text-field variant="outlined" label="Prova 1" 
-                                type="datetime-local"
-                                :model-value="exam1Date"
-                                @input="(e : any) => exam1Date = e.target.value">
-                        </v-text-field>
+                        <v-text-field variant="outlined" label="Prova 1" type="datetime-local" 
+                                :model-value="classInfo.exam_1_timestamp" 
+                                @input="(e : any) => classInfo.exam_1_timestamp = e.target.value" />
                     </v-col>
                     <v-col cols="12">
-                        <v-text-field variant="outlined" label="Prova 2" 
-                                type="datetime-local"
-                                :model-value="exam2Date"
-                                @input="(e : any) => exam2Date = e.target.value">
-                        </v-text-field>
+                        <v-text-field variant="outlined" label="Prova 2" type="datetime-local"
+                                :model-value="classInfo.exam_2_timestamp"
+                                @input="(e : any) => classInfo.exam_2_timestamp = e.target.value" />
                     </v-col>
                     <v-col cols="12">
-                        <v-text-field variant="outlined" label="Segunda Chamada"
-                                type="datetime-local"
-                                :model-value="retakeExamDate"
-                                @input="(e : any) => retakeExamDate = e.target.value">
-                        </v-text-field>
+                        <v-text-field variant="outlined" label="Segunda Chamada" type="datetime-local"
+                                :model-value="classInfo.re_take_exam_timestamp"
+                                @input="(e : any) => classInfo.re_take_exam_timestamp = e.target.value" />
                     </v-col>
                     <v-col cols="12">
-                        <v-text-field variant="outlined" label="Prova Final" 
-                                type="datetime-local"
-                                :model-value="finalExamDate"
-                                @input="(e : any) => finalExamDate = e.target.value">
-                        </v-text-field>
+                        <v-text-field variant="outlined" label="Prova Final" type="datetime-local"
+                                :model-value="classInfo.final_exam_timestamp" 
+                                @input="(e : any) => classInfo.final_exam_timestamp = e.target.value" />
                     </v-col>
                 </v-row>
                 <v-row>
                     <v-col cols="12">
-                        <v-textarea variant="outlined" label="Observações" 
-                                :model-value="observations" @input="(e : any) => observations = e.target.value" />
+                        <v-textarea variant="outlined" label="Observações" :model-value="classInfo.observations"
+                                :rules="maxChars(100, false)" validate-on="input"        
+                                @input="(e : any) => classInfo.observations = e.target.value" />
                     </v-col>
                 </v-row>
-            </v-container>
+                <p class="text-danger font-12 text-center">{{ errorMsg }}</p>
+            </v-form>
+            
         </v-card-text>
+        
         <v-card-actions>
+            
             <v-spacer></v-spacer>
             <v-btn color="var(--black)" size="large" class="font-12" variant="tonal" @click="$emit('cancel')">Cancel</v-btn>
             <v-spacer></v-spacer>
@@ -72,8 +66,9 @@
 </template>
 
 <script lang="ts">
-import type { IClass } from '@/https/classes';
+import type { IClass, IClassGetBody } from '@/interfaces/Https';
 import { getClass, updateClass } from '@/https/classes';
+import { maxChars } from '@/utils/validations';
 export default {
     name: 'class-edit',
     props: {
@@ -84,17 +79,15 @@ export default {
     },
     data(){
         return {
-            name: "",
-            teacher: "",
-            classroom: "",
-            exam1Date: "",
-            exam2Date: "",
-            retakeExamDate: "",
-            finalExamDate: "",
-            observations: "",
-            endTime: [],
-            days: [],
-            startTime: []
+            classInfo: {} as IClassGetBody,
+            maxChars: maxChars,
+            errorMsg: "" as string,
+            showError: false as Boolean
+        }
+    },
+    watch:{
+        classInfo (val){
+            this.showError = false;
         }
     },
     created(){
@@ -104,60 +97,45 @@ export default {
         fetchClass(){
             getClass(this.id).then(r => {
                 const data = r.response;
-                this.name = data.name;
-                this.teacher = data.teacher;
-                this.classroom = data.classroom;
-                this.exam1Date = data.exam_1_timestamp;
-                this.exam2Date = data.exam_2_timestamp;
-                this.retakeExamDate = data.re_take_exam_timestamp;
-                this.finalExamDate = data.final_exam_timestamp;
-                this.observations = data.observations;
-                this.days = data.days;
-                this.startTime = data.start_time;
-                this.endTime = data.end_time;
-
+                this.classInfo = data;
             }).catch(e => {
                 console.error(e);
             });
         },
-        editClass(){
-            const name = this.name;
-            const teacher = this.teacher;
-            const classroom = this.classroom;
-            const exam1Date = this.exam1Date;
-            const exam2Date = this.exam2Date;
-            const retakeExamDate = this.retakeExamDate;
-            const finalExamDate = this.finalExamDate;
-            const observations = this.observations;
-            if(!name || !teacher || !classroom || !exam1Date || !exam2Date || !retakeExamDate || !finalExamDate){
-                // TODO - Show an error message
+        async editClass(){
+            this.showError = false;
+            const isValid = await this.$refs.editClassForm.validate();
+            if(!isValid.valid){
+                this.errorMsg = "Por favor, preencha todos os campos corretamente.";
+                this.showError = true;
                 return;
             }
-            
+
+            const ci = this.classInfo;
             // Call the http update method to update the faq item
             const data = {
-                name: name,
-                teacher: teacher,
-                classroom: classroom,
-                exam1Date: exam1Date,
-                exam2Date: exam2Date,
-                retakeExamDate: retakeExamDate,
-                finalExamDate: finalExamDate,
-                observations: observations || null,
-                endTime: this.endTime,
-                days: this.days,
-                startTime: this.startTime
+                id: this.id,
+                name: ci.name,
+                teacher: ci.teacher,
+                classroom: ci.classroom,
+                exam1Date: ci.exam_1_timestamp,
+                exam2Date: ci.exam_2_timestamp,
+                retakeExamDate: ci.re_take_exam_timestamp,
+                finalExamDate: ci.final_exam_timestamp,
+                observations: ci.observations || null,
+                endTime: ci.end_time,
+                days: ci.days,
+                startTime: ci.start_time
             } as IClass;
 
             updateClass(data, this.id)
             .then(r => {
                 this.$emit("done", r);
-                console.log(r);
-                // TODO - on success, show a success message
             })
             .catch(e => {
                 console.error(e)
-                // TODO - on failure, show an error message
+                this.errorMsg = "Erro ao atualizar a disciplina. Por favor, tente novamente.";
+                this.showError = true;
             });
             
             
