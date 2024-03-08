@@ -8,7 +8,8 @@
     <schedule-x-calendar v-if="render" :calendar-app="app as CalendarApp" />
 
     <v-dialog v-model="openDialog" max-width="500px">
-        <event-edit :event="eventSelected" :allow-edit="allowEdit" />
+        <event-edit :event="eventSelected" :allow-edit="allowEdit" @done="$emit('doneEditing')" 
+        @errorEditing="$emit('errorEditing')" @errorDeleting="$emit('errorDeleting')" />
     </v-dialog>
 </template>
 
@@ -174,9 +175,7 @@ export default{
             });
         }
     },
-    emits: ['refresh']
-    
-    
+    emits: ['refresh', 'errorEditing', 'doneEditing', 'errorDeleting']
 }
 </script>
 
