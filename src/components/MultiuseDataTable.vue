@@ -3,24 +3,23 @@
         loading-text="Carregando..." :loading="loading"
         :headers="(headers as any)" :items="tableItems" :item-value="itemValue"
         :class="classes"
-        :items-per-page="itemsPerPageOptions[1]" 
-        :items-per-page-options="itemsPerPageOptions"
+        :items-per-page="tableItems.length === 1 ? 1 : tableItems.length <= 4 ? Math.floor(tableItems.length/2) 
+                                    : tableItems.length <= 8 || tableItems.length > 8 ? Math.floor(tableItems.length/4) 
+                                    : 0"    
+        :items-per-page-options="tableItems.length > 0 && tableItems.length === 1 ? [1] 
+                                    : tableItems.length <= 4 ? [1, tableItems.length]
+                                    : tableItems.length <= 8 ? [1, Math.floor(tableItems.length/4), Math.floor(tableItems.length/2), tableItems.length]
+                                    : []"
+                                    
         :show-expand="expandable" :expand-on-click="expandable"
-        :show-current-page="showPage" @update:expanded="e => {e.length > 1 && (e as Array<string>).shift()}">
-        <!-- TODO - Create function for the @update:expanded event -->
+        :show-current-page="showPage" @update:expanded="e => updateExpandedEvent(e)">
 
         <template v-for="(slot, i) in slotKeys" :key="i" v-slot:[`item.${slot}`]="{ item }">
             <slot :name="slot" :item="item" />
         </template>
-        
-        <!-- TODO - Check if this template is actually necessary and if cannot be replaced by the above one -->
-        <template v-slot:item.actions>
-            <slot name="actions" />
-        </template>
 
         <template v-if="expandable" v-slot:expanded-row="{columns, item, isExpanded}">
-            <!-- TODO - customExpandedRowElement should be checked dynamically on the slotKeys -->
-            <v-container v-if="!customExpandedRowElement">
+            <v-container v-if="!slotKeys.includes('expandedRowEl')">
                 <v-card class="mx-auto" variant="flat">
                     <v-card-text class="font-12 font-blue">
                         <v-row no-gutters>
@@ -37,8 +36,7 @@
             </v-container>
             <slot v-else name="expandedRowEl" :item="item" :cols="columns" :ie="isExpanded" />
 
-            <!-- TODO - Check if this conditional logic is correct -->
-            <tr v-if="customExpandedRowElement && showExpandableItemActions">
+            <tr v-if="slotKeys.includes('expandedRowEl') && showExpandableItemActions">
                 <td :colspan="columns.length">
                     <v-card variant="flat">
                         <v-card-actions>
@@ -72,13 +70,14 @@
 </template>
 
 <script lang="ts">
+import type { IDataTableHeaders, IExpandableItemActions, INoDataSlotOptions } from '@/interfaces/multiUseDataTable';
+
 export default {
     name: 'multiuse-data-table',
     components: {
     },
     props: {
-        // TODO - Create an interface for the headers prop
-        headers: {type: Array<{title: string, key: string, align: string, sortable: boolean}>, required: true},
+        headers: {type: Array<IDataTableHeaders>, required: true},
         
         tableItems: {type: Array<Object>, required: true},
 
@@ -90,9 +89,6 @@ export default {
 
         loading: {type: Boolean, default: false, required: false},
 
-        // TODO - remove this prop and use the slotKeys to check if the customExpandedRowElement is necessary
-        customExpandedRowElement: {type: Boolean, default: false, required: false},
-
         refreshButton: {type: Boolean, default: true, required: false},
 
         addNewButtonText: {type: String, default: 'Criar Nova', required: false},
@@ -101,12 +97,10 @@ export default {
 
         expandableItemKey:{type: String, default: null, required: false},
 
-        // TODO - remove this prop and use only expandableItemActions
         showExpandableItemActions:{type: Boolean, default: false, required: false},
         
-        // TODO - Create an interface for expandableItemActions
         expandableItemActions:{
-            type: Array<{name: string, color: string, eventName: string, prependIcon: string}>,
+            type: Array<IExpandableItemActions>,
             default: [],
             required: false
         },
@@ -115,27 +109,25 @@ export default {
 
         showNoDataSlot:{type: Boolean, default: true, required: false},
 
-        // TODO - Create an interface for noDataSlotOptions
         noDataSlotOptions:{
-            type: Object as () => {text: string, color: string},
-            default: () => ({text: 'Nada para mostrar', color: 'var(--faded-dark-blue)'}),
+            type: {} as () => INoDataSlotOptions,
+            default: {text: 'Nada para mostrar', color: 'var(--faded-dark-blue)'},
             required: false
         }
     },
     data(){
         return{
-            itemsPerPageOptions: [] as number[],
             dialogAdd: false as boolean,
             colorRow: false as boolean,
-            slotKeys: [] as string[]
+            slotKeys: [] as string[],
+            updateExpandedEvent: (e : Array<string>) => e.length > 1 && e.shift(),
         }
     },
-    beforeCreate(){
-    },
-    created(){
-        this.getItemsPerPageOptions()
+    async created(){
         const slots = Object.assign({}, this.$slots);
         this.slotKeys = Object.keys(slots);
+    },
+    beforeMount(){
     },
     methods:{
         getExpandableItemValue(item : Object){
@@ -150,26 +142,6 @@ export default {
                 return 'error in expandableItemKey prop - please check the key name'
             }
         },
-        // FIXME - Make this dynamic pagination work
-        getItemsPerPageOptions() : void{
-            if(this.tableItems?.length === 0){
-                return;
-            }
-            let array = [1];
-            
-            if(this.tableItems.length === 1 || this.tableItems.length < 4){
-                if(this.tableItems.length > 1) array.push(Math.floor(this.tableItems.length));
-                this.itemsPerPageOptions = array;
-            }else if(this.tableItems.length <= 8){
-                array.push(Math.floor(this.tableItems.length/2))
-            }else{
-                array.push(Math.floor(this.tableItems.length/4))
-                array.push(Math.floor(this.tableItems.length/2))
-            }
-            array.push(this.tableItems.length)
-
-            this.itemsPerPageOptions = array; 
-        }
     },
 }
 </script>
