@@ -108,11 +108,12 @@
 <script lang="ts">
 import TextBtn from '@/components/smaller_components/buttons/TextBtn.vue';
 import {maxChars, telephone, email, notEmpty} from '@/utils/validations'
-import { createClass, type IClass } from '@/https/classes';
+import { createClass } from '@/https/classes';
+import type { IClass } from '@/interfaces/Https';
 export default {
     name: 'new-class-form',
     components: {
-        TextBtn
+        TextBtn, 
     },
     data(){
      return{
@@ -138,13 +139,10 @@ export default {
             disableAddDayItem: true as boolean,
             onlineClass: false as boolean,
             weekdays: [
-                {title: 'Segunda-Feira', value: 1},
-                {title: 'Terça-Feira', value: 2},
-                {title: 'Quarta-Feira', value: 3},
-                {title: 'Quinta-Feira', value: 4},
-                {title: 'Sexta-Feira', value: 5},
-                {title: 'Sábado', value: 6},
-            ]
+                {title: 'Segunda-Feira', value: 1}, {title: 'Terça-Feira', value: 2},
+                {title: 'Quarta-Feira', value: 3}, {title: 'Quinta-Feira', value: 4},
+                {title: 'Sexta-Feira', value: 5}, {title: 'Sábado', value: 6},
+            ],
         }
     },
     methods:{
@@ -156,10 +154,10 @@ export default {
                 createClass(this.classes)
                 .then(r => {
                     (this.$refs.form as any)?.reset()
-                    // TODO - Show success message
+                    this.$emit('success', 'Disciplina criada com sucesso!');
                 })
                 .catch(e => {
-                    // TODO - Show error message
+                    this.$emit('error', 'Encontramos um erro ao criar a disciplina...');
                 });
             }else{
                 this.errorMessage = "Preencha todos os campos corretamente";
@@ -176,10 +174,7 @@ export default {
                 }
             }else{
                 if(this.classes.days.length === 0){
-                    // TODO - Create function to create slot
-                    this.classes.days.push('');
-                    this.classes.startTime.push('');
-                    this.classes.endTime.push('');
+                    this.createSlot();
                 }
             }
         },
@@ -203,17 +198,11 @@ export default {
             const isUndefined = day === undefined || start === undefined || end === undefined;
             const isNull = day === null || start === null || end === null;
             const isEmpty = day === '' || start === '' || end === '';
-            console.log(isUndefined, isNull, isEmpty);
             
             if(isUndefined || isNull || isEmpty){
-                console.log(this.classes.days, this.classes.startTime, this.classes.endTime);
-                
                 return;
             }else{
-                // TODO - Create function to create slot
-                this.classes.days.push('');
-                this.classes.startTime.push('');
-                this.classes.endTime.push('');
+                this.createSlot()
                 return;
             }
         },
@@ -225,7 +214,13 @@ export default {
            if(this.classes.days[len-1] !== '' && this.classes.startTime[len-1] !== '' && this.classes.endTime[len-1] !== ''){
                this.disableAddDayItem = false;
            }
-        }
-    }
+        },
+        createSlot(){
+            this.classes.days.push('');
+            this.classes.startTime.push('');
+            this.classes.endTime.push('');
+        },
+    },
+    emits: ['error', 'success']
 }
 </script>

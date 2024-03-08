@@ -4,23 +4,23 @@
             <h3 class="text-center font-blue" style="text-wrap: balance;">Editar Contato</h3>
         </v-card-title>
         <v-card-text>
-            <v-container>
+            <v-form ref="contactEditForm">
                 <v-row>
                     <v-col cols="12">
-                        <v-text-field variant="outlined" label="Nome" 
-                                :model-value="name"
+                        <v-text-field variant="outlined" label="Nome" :model-value="name"
+                                :rules="rules.maxChars(30)" validate-on="input"
                                 @input="(e : any) => name = e.target.value">
                         </v-text-field>
                     </v-col>
                     <v-col cols="12">
-                        <v-text-field variant="outlined" label="Telefone" 
-                                :model-value="phone"
+                        <v-text-field variant="outlined" label="Telefone" :model-value="phone"
+                                validate-on="input" :rules="rules.telephone"
                                 @input="(e : any) => phone = e.target.value">
                         </v-text-field>
                     </v-col>
                     <v-col cols="12">
-                        <v-text-field variant="outlined" label="Email" 
-                                :model-value="email"
+                        <v-text-field variant="outlined" label="Email" :model-value="email"
+                                validate-on="input" :rules="rules.email"
                                 @input="(e : any) => email = e.target.value">
                         </v-text-field>
                     </v-col>
@@ -28,10 +28,15 @@
                 <v-row>
                     <v-col cols="12">
                         <v-textarea variant="outlined" label="Quando contatar?" 
-                                :model-value="when_to_contact" @input="(e : any) => when_to_contact = e.target.value" />
+                                :model-value="when_to_contact"  counter
+                                :rules="rules.maxChars(100)" validate-on="input"
+                                @input="(e : any) => when_to_contact = e.target.value" />
                     </v-col>
                 </v-row>
-            </v-container>
+            </v-form>
+            <v-row no-gutters class="text-danger">
+                <p v-if="showErrorMessage" class="mx-auto">{{ errorMessage }}</p>
+            </v-row>
         </v-card-text>
         <v-card-actions>
             <v-spacer></v-spacer>
@@ -45,12 +50,13 @@
 
 <script lang="ts">
 import { updateContact } from '@/https/contacts';
-import type { IContact } from '@/https/contacts';
+import {maxChars, telephone, email, notEmpty} from '@/utils/validations'
+import type { IContact, IContactGetBody } from '@/interfaces/Https';
 export default {
     name: 'contact-edit',
     props: {
         item: {
-            type: Object,
+            type: Object as () => IContactGetBody,
             required: false
         }
     },
@@ -60,37 +66,41 @@ export default {
             phone: this.item?.phone_number || "",
             email: this.item?.email || "",
             when_to_contact: this.item?.when_to_contact || "",
+            rules:{
+                maxChars: maxChars,
+                telephone: telephone,
+                email: email,
+                notEmpty: notEmpty,
+            },
+            errorMessage: '' as string,
+            showErrorMessage: false as boolean
         }
     },
     methods:{
-        editContact(){
-            const name = this.name;
-            const phone = this.phone;
-            const email = this.email;
-            const when_to_contact = this.when_to_contact;
-            if(!name || !phone || !email || !when_to_contact){
-                // TODO - Show an error message
+        async editContact(){
+            const validateForm = await this.$refs.contactEditForm.validate();
+            if(!validateForm.valid){
+                this.errorMessage = 'Preencha todos os campos corretamente';
+                this.showErrorMessage = true;
                 return;
             }
-            
+      
             // Call the http update method to update the faq item
             const data = {
-                name: name,
-                phoneNumber: phone,
-                email: email,
-                whenToContact: when_to_contact
+                name: this.name,
+                phoneNumber: this.phone,
+                email: this.email,
+                whenToContact: this.when_to_contact
             } as IContact;
 
-            // TODO - set the type
-            updateContact(this.item._id, data).then(r => {
+            updateContact(this.item?._id as string, data).then(r => {
                 this.$emit("done", r);
-                // TODO - on success, show a success message
             }).catch(e => {
                 console.error(e);
-                // TODO - on failure, show an error message
+                this.$emit('error', 'Erro ao atualizar contato.');
             });
         }
     },
-    emits: ['cancel', 'done']
+    emits: ['cancel', 'done', 'error']
 }
 </script>

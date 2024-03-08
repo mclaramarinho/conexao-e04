@@ -1,11 +1,10 @@
 <template>
     <v-card class="py-4">
         <v-card-title>
-            <!-- TODO - create a global class for text-wrap: balance -->
-            <h3 class="text-center font-blue" style="text-wrap: balance;">{{ title }}</h3>
+            <h3 class="text-center font-blue text-wrap-balance">{{ title }}</h3>
         </v-card-title>
         <v-card-text>
-            <v-container>
+            <v-form ref="faqAddEditForm">
                 <v-row>
                     <v-col cols="12">
                         <v-text-field variant="outlined" label="Pergunta"
@@ -18,7 +17,10 @@
                                 :model-value="answer" @input="(e : any) => answer = e.target.value" />
                     </v-col>
                 </v-row>
-            </v-container>
+            </v-form>
+            <v-row v-if="showError" no-gutters class="text-danger">
+                <p class="mx-auto">{{ errorMsg }}</p>
+            </v-row>
         </v-card-text>
         <v-card-actions>
             <v-spacer></v-spacer>
@@ -31,13 +33,14 @@
 </template>
 
 <script lang="ts">
-import { createFAQ, updateFAQ, type IFaq } from '@/https/faqs';
+import { createFAQ, updateFAQ } from '@/https/faqs';
+import type { IFaq, IFaqGetBody } from '@/interfaces/Https';
 export default {
     name: 'faq-add-edit',
     props: {
         variant: String as () => "edit" | "add",
         item: {
-            type: Object as () => {id: string, question: string, answer: string },
+            type: Object as () => IFaqGetBody,
             required: false
         }
     },
@@ -46,7 +49,9 @@ export default {
             title: this.variant === "edit" ? "Editar FAQ" : "Adicionar FAQ",
             dialog: false,
             question: this.item?.question || "",
-            answer: this.item?.answer || ""
+            answer: this.item?.answer || "",
+            showError: false as boolean,
+            errorMsg: '' as string
         }
     },
     methods:{
@@ -58,10 +63,11 @@ export default {
             this.variant === 'add' && this.createNewFAQ();
         },
 
-        createNewFAQ(){
-
-            if(!this.question || !this.answer){
-                //TODO - show error message
+        async createNewFAQ(){
+            const validation = await this.$refs.faqAddEditForm.validate();
+            
+            if(!validation.valid){
+                this.setError()
                 return;
             }
             const data = {
@@ -70,10 +76,9 @@ export default {
             } as IFaq;
 
             createFAQ(data).then(r => {
-                //TODO - on success, show a success message
                 this.$emit("done", r)
             }).catch(e => {
-                //TODO - on failure, show an error message
+                this.$emit('error', 'Encontramos um erro ao cadastrar a pergunta.')
                 console.log(e)
             })
             
@@ -83,7 +88,7 @@ export default {
         editFAQ(){
             // Call the http update method to update the faq item
             if(!this.question || !this.answer){
-                //TODO - show error message
+                this.setError()
                 return;
             }
             const data = {
@@ -91,18 +96,24 @@ export default {
                 answer: this.answer
             } as IFaq;
             
-            // FIXME - _id or id???
             updateFAQ(data, this.item?._id as string)
             .then(r =>{
-                //TODO - on success, show a success message
-                this.$emit("done", r)
+                if(r.code === 200){
+                    this.$emit("done", r)
+                }else{
+                    throw new Error('not-updated/error')
+                }
             })
             .catch(e => {
-                //TODO - on failure, show an error message
+                this.$emit('error', 'Encontramos um erro ao atualizar o FAQ.')
                 console.log(e)
             })
+        },
+        setError(){
+            this.errorMsg = 'Preencha todas as informações corretamente';
+            this.showError = true;
         }
     },
-    emits: ['cancel', 'done']
+    emits: ['cancel', 'done', 'error']
 }
 </script>

@@ -1,13 +1,10 @@
 <template>
-    <!-- TODO - Check if custom-epanded-row-element is still needed -->
     <multiuse-data-table :headers="headers" :table-items="classes"
-        expandable custom-expanded-row-element
-        :expandable-item-actions="tableActions" show-expandable-item-actions
+        expandable :expandable-item-actions="tableActions" show-expandable-item-actions
         :loading="loadingTable"
         @edit="e => handleEditDialog(e)" @delete="e => handleDeleteDialog(e)"
         @update="() => fetchClasses()">
-        <template v-slot:expandedRowEl="{cols, item}">
-                <!-- TODO - Create a separate component for this table -->
+        <template #expandedRowEl="{cols, item}">
                 <tr>
                     <td :colspan="cols.length">
                         <v-table class="font-blue font-12 w-100">
@@ -44,32 +41,30 @@
         <dialog-delete-item @delete-item-confirm="deleteItem" @close-delete="showDeleteDialog = false" />
     </v-dialog>
     <v-dialog v-model="showEditDialog" max-width="500px">
-        <!-- TODO - Create a function to handle @done event -->
-        <class-edit :id="(selectedItem.id as string)" @cancel="showEditDialog = false" @done="e => {showEditDialog = false; fetchClasses()}" />
+        <class-edit :id="(selectedItem.id as string)" @cancel="showEditDialog = false" @done="doneEditing" />
     </v-dialog>
 </template>
 
-
 <script lang="ts">
 import { getAllClasses, deleteClass } from '@/https/classes';
-import type { IHTTPResponse } from '@/https/setup';
-import type {IClass, IClassFormatted, IClassGetBody} from '@/interfaces/Https';
+import type {IClassFormatted, IClassGetBody} from '@/interfaces/Https';
 import MultiuseDataTable from '@/components/MultiuseDataTable.vue';
 import DialogDeleteItem from '@/components/smaller_components/dialogs/DialogDeleteItem.vue';
 import ClassEdit from '@/components/smaller_components/dialogs/ClassEdit.vue';
+import { isoToDateTimeFormat, isoToTimeFormat } from '@/utils/dates';
 export default {
     name: 'classes-view',
     components: {
-        MultiuseDataTable, DialogDeleteItem, ClassEdit
+        MultiuseDataTable, DialogDeleteItem, ClassEdit, 
     },
     data(){
         return {
+            
             classes: [] as Array<IClassFormatted>,
             loadingTable: false,
             showDeleteDialog: false,
             showEditDialog: false,
-            // TODO - Set selectedItem type
-            selectedItem: {},
+            selectedItem: {} as IClassFormatted,
             headers:[
                 {
                     title: 'Disciplina',
@@ -99,45 +94,37 @@ export default {
             tableActions:[
                 {name: 'Excluir', color: 'var(--danger-red)', eventName: 'delete', prependIcon:'mdi-delete'},
                 {name: 'Editar', color: 'var(--dark-blue)', eventName: 'edit', prependIcon:'mdi-pencil'}
-            ]
+            ],
         }
     },
     created(){
         this.fetchClasses();
-
     },
     methods:{
+        async doneEditing(){
+            this.showEditDialog = false;
+            this.$emit('success',  'A disciplina foi atualizada!');
+            await this.fetchClasses();
+        },
         async fetchClasses(){
             this.loadingTable = true;
-
             const response = await getAllClasses();
 
-            this.loadingTable = false;
-
             if(response.code === 200){
-                console.log(response.response);
-                
                 const localClasses = response.response as Array<IClassGetBody | null>;
 
                 this.classes = localClasses.map(item => {
                     const schedule = item?.days.map((day : string, index : number) => {
-                        const startTime = new Date(item.start_time[index]);
-                        const fStart = startTime.getHours().toString().padStart(2, '0') + ':' + startTime.getMinutes().toString().padStart(2, '0');
-
-                        const endTime = new Date(item.end_time[index]);
-                        const fEnd = endTime.getHours().toString().padStart(2, '0') + ':' + endTime.getMinutes().toString().padStart(2, '0');
+                        const fStart = isoToTimeFormat(item.start_time[index]);
+                        const fEnd = isoToTimeFormat(item.end_time[index]);
 
                         return `${day}: ${fStart} - ${fEnd}`
                     })
-                    // TODO - Crete a function to handle the date formatting in a date utils file
-                    const exam1Date = item && new Date(item.exam_1_timestamp);
-                    const fExam1Date = exam1Date && exam1Date.getDate().toString().padStart(2, '0') + '/' + (exam1Date.getMonth() + 1).toString().padStart(2, '0') + '/' + exam1Date.getFullYear() + ' - ' + exam1Date.getHours().toString().padStart(2, '0') + ':' + exam1Date.getMinutes().toString().padStart(2, '0');
-                    const exam2Date = item && new Date(item.exam_2_timestamp);
-                    const fExam2Date = exam2Date && exam2Date.getDate().toString().padStart(2, '0') + '/' + (exam2Date.getMonth() + 1).toString().padStart(2, '0') + '/' + exam2Date.getFullYear() + ' - ' + exam2Date.getHours().toString().padStart(2, '0') + ':' + exam2Date.getMinutes().toString().padStart(2, '0');
-                    const retakeExamDate = item && new Date(item.re_take_exam_timestamp);
-                    const fRetakeExamDate = retakeExamDate && retakeExamDate.getDate().toString().padStart(2, '0') + '/' + (retakeExamDate.getMonth() + 1).toString().padStart(2, '0') + '/' + retakeExamDate.getFullYear() + ' - ' + retakeExamDate.getHours().toString().padStart(2, '0') + ':' + retakeExamDate.getMinutes().toString().padStart(2, '0');
-                    const finalExam = item && new Date(item.final_exam_timestamp);
-                    const fFinalExam = finalExam && finalExam?.getDate().toString().padStart(2, '0') + '/' + (finalExam.getMonth() + 1).toString().padStart(2, '0') + '/' + finalExam.getFullYear() + ' - ' + finalExam.getHours().toString().padStart(2, '0') + ':' + finalExam.getMinutes().toString().padStart(2, '0');
+
+                    const fExam1Date = item && isoToDateTimeFormat(item.exam_1_timestamp);
+                    const fExam2Date = item && isoToDateTimeFormat(item.exam_2_timestamp);
+                    const fRetakeExamDate = item && isoToDateTimeFormat(item.re_take_exam_timestamp);
+                    const fFinalExam = item && isoToDateTimeFormat(item.final_exam_timestamp);
 
                     return {
                         id: item?._id,
@@ -155,31 +142,31 @@ export default {
                         endTime: ''
                     } as IClassFormatted;
                 })
+                
             }else{
-                console.log(response);
+                this.classes = [];
             }
+            this.loadingTable = false;
         },
-        // TODO - Set item type
-        handleEditDialog(item){
+        handleEditDialog(item : IClassFormatted){
             this.selectedItem = item;
             this.showEditDialog = true;
         },
-        // TODO - Set item type
-        handleDeleteDialog(item){
+        handleDeleteDialog(item : IClassFormatted){
             this.showDeleteDialog = true;
             this.selectedItem = item;
         },
         async deleteItem(){
             const res = await deleteClass(this.selectedItem.id);
+            this.showDeleteDialog = false;
             if(res.code === 204){
-                this.fetchClasses();
-                this.showDeleteDialog = false;
-                // TODO - Show success message
+                this.$emit('success', 'A disciplina foi excluida!');
+                await this.fetchClasses();
             }else{
-                // TODO - Show error message
+                this.$emit('error', 'Ocorreu um erro!');
             }
-        }
-    }
+        }, 
+    },
+    emits: ['error', 'success']
 }
-
 </script>

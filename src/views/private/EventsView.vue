@@ -1,4 +1,6 @@
 <template>
+    <circular-loader v-if="!render" />
+    
     <calendar-component v-if="render"
                     :events="events"
                     :view-modes="viewMode"
@@ -7,7 +9,11 @@
                     :multiple-calendars="multipleCalendars"
                     :calendars="calendars"
                     :event-calendar-logic="calendarLogic"
-                    @refresh="fetchEvents" />
+                    @refresh="fetchEvents"
+                    @doneEditing="$emit('success', 'Evento alterado com sucesso!')"
+                    @errorEditing="$emit('error', 'Encontramos um erro ao alterar o evento.')"
+                    @errorDeleting="$emit('error', 'Não conseguimos excluir esse evento.')" />
+    
 </template>
 
 <script lang="ts">
@@ -15,11 +21,11 @@ import { getAllEvents } from '@/https/events';
 import CalendarComponent from '@/components/CalendarComponent.vue';
 import type { IEventGetBody } from '@/interfaces/Https';
 import { calendars as cal, eventCalendarLogic as logic } from '@/stores/calendars';
-
+import CircularLoader from '@/components/smaller_components/loaders/CircularLoader.vue';
 export default {
     name: "events-view",
     components: {
-        CalendarComponent
+        CalendarComponent, CircularLoader, 
     },
     data() {
         return {
@@ -49,11 +55,12 @@ export default {
                 }
             }catch(err){
                 console.log(err);
-                // TODO - show error message
+                this.$emit('error', 'Não conseguimos buscar os eventos...')
                 this.events = [];
             }
             this.render=true;
         },
-    }
+    },
+    emits: ['error', 'success']
 }
 </script>

@@ -86,12 +86,13 @@ export default{
 
                 //store otp 
                 user_store.setOtp(val)
+                const otp_validation = null;
                 try{
                     //validate otp
                     const otp_validation = await validateCode();
                     
                     if(otp_validation.code===403) throw Error("O código não é válido"); //error message
-                    if(otp_validation.code===400) throw Error("Ocorreu um erro interno na requisição"); //error message
+                    if(otp_validation.code===400 || otp_validation.code === 422) throw Error("Ocorreu um erro interno na requisição"); //error message
                     
                     //set user pinia data
                     user_store.setRole(otp_validation.response.role);
@@ -120,7 +121,7 @@ export default{
 
                         const created = await admin_create(user_store.getData());
                         
-                        if(!created) throw Error("Não foi possível criar sua conta no banco de dados."); // error message
+                        if(created.code !== 201) throw Error("Não foi possível criar sua conta no banco de dados."); // error message
 
                         useUserInfoStore().update().then(r => {
                             this.$router.push({name: 'admin-events', params: {id: useUserInfoStore().UID as string}});
@@ -129,13 +130,14 @@ export default{
                         })
                     }
                 }catch(e : any){
+                    console.log(otp_validation)
                     this.error = true;
                     
                     if(e.message.includes('Não') || e.message.includes('inesperado')){
                         this.errorMsg = e.message;
                     }else{
                         this.errorMsg = "Ops... Tivemos algum erro inesperado.";
-                        return
+                        return;
                     }
                 }
             }

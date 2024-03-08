@@ -19,6 +19,7 @@
         </v-card-actions>
         <v-card-text>
             <v-card v-if="!enableEditing">
+                <!-- TODO - Create separate component for this event display -->
                 <v-card-text class="font-12 font-blue">
                     <v-row no-gutters>
                         <v-col cols="12">
@@ -63,6 +64,8 @@
                     </v-row>
                 </v-card-text>
             </v-card>
+                <!-- TODO - Create separate component for this form -->
+
             <v-form ref="form" v-if="enableEditing">
                 <v-text-field :model-value="localEvent.event_name" label="Nome do Evento"
                                 @update:model-value="e => localEvent.event_name = e" />
@@ -184,7 +187,7 @@ export default{
                     this.enableEditing = false;
                 }).catch(e => {
                     console.log(e)
-                    //TODO - show error message
+                    this.$emit('errorEditing')
                 })
             }
         },
@@ -194,15 +197,14 @@ export default{
             deleteEvent(id).then(r => {
                 if(r.code === 204){
                     this.$emit('done');
-                    //TODO - show success message
                 }
             }).catch(e => {
                 console.log(e)
-                //TODO - error message
+                this.$emit('errorDeleting')
             }).finally(() =>  this.enableDelete = false)
         }
     },
-    emits: ['done']
+    emits: ['done', 'errorEditing', 'errorDeleting']
 }
 </script>
 

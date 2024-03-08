@@ -24,14 +24,11 @@
         </v-row>
     </v-form>
     
-    <v-dialog max-width="500px" :model-value="confirmDialog">
-        <dialog-confirm-action v-if="edit"
-             @confirm="e => updateReq(e)"    @cancel="resetDialogsAndActions" />
+    <v-dialog max-width="500px" :model-value="confirmDialog" @update:model-value="resetDialogsAndActions">
+        <dialog-confirm-action v-if="edit" @confirm="e => updateReq(e)" @cancel="resetDialogsAndActions" />
         
-        <dialog-confirm-action v-if="del"
-            @confirm="e => deleteReq(e)"    @cancel="resetDialogsAndActions" />
+        <dialog-confirm-action v-if="del" @confirm="e => deleteReq(e)" @cancel="resetDialogsAndActions" />
     </v-dialog>
-    
 </template>
 
 <script lang="ts">
@@ -43,7 +40,7 @@ import type { IFirebaseUserUpdate } from '@/interfaces/ResponseObjects';
 export default{
     name: 'admin-profile',
     components:{
-        DialogConfirmAction
+        DialogConfirmAction, 
     },
     data() {
         return{
@@ -52,7 +49,7 @@ export default{
             pswdConfirm: '' as string,
             confirmDialog: false as boolean,
             del: false as boolean,
-            edit: false as boolean
+            edit: false as boolean,
         }
     },
     created() {
@@ -63,11 +60,11 @@ export default{
             deleteAccount(pswd).then(r => {
                 console.log('deleted');
                 console.log(r)
-                // TODO - Show success message
+                this.$emit('success', 'A conta foi excluida.')
             })
             .catch(e => {
-                // TODO - Show error message
                 console.log(e)
+                this.$emit('error', 'Não conseguimos excluir sua conta...');
             })
         },
         updateReq(pswd : string){
@@ -76,37 +73,28 @@ export default{
                 email: this.user.email
             } as {name: string, email: string};
             updateUser(data, pswd).then((res : IFirebaseUserUpdate) => {
-                // TODO - Use the response interface for the res object
                 const r = res as IFirebaseUserUpdate;
-
-                if(r.emailUpdated&&r.nameUpdated){
-                    // TODO - Set success message
-                }else if(r.emailUpdated){
-                    // TODO - Set success message
-                }else{
-                    // TODO - Set success message
-                }
-                // TODO - Show success message
-
-                // TODO - Create a reset function
-                this.confirmDialog = false;
-                this.del = false;
-                this.edit = false;
+                let msg = '';
+                if(r.emailUpdated && r.nameUpdated){msg = 'As informações foram atualizadas!';}
+                else if(r.emailUpdated){msg = 'O email foi atualizado.';}
+                else{msg = 'O nome foi atualizado.';}
+                this.$emit('success', msg);
+                this.resetDialogsAndActions()
             }).catch(e => {
                 console.log(e.error)
+                let msg = '';
                 if(e.error.code === 'no-data-to-update'){
-                    // TODO - Set error message
+                    msg = 'Não há informações para atualizar.';
                 }else if(e.error.code === 'email/not-updated/error'){
-                    // TODO - Set error message
+                    msg = 'Não conseguimos atualizar seu email.';
                 }else if(e.error.code === 'name/not-updated/error'){
-                    // TODO - Set error message
+                    msg = 'Não conseguimos atualizar seu nome';
                 }else if(e.error.code === 'invalid-user-cred/error'){
-                    // TODO - Set error message
+                    msg = 'A senha inserida está incorreta...';
                 }else{
-                    // TODO - Set error message
+                    msg = 'Encontramos um erro inesperado.'
                 }
-
-                // TODO - Show error message
+                this.$emit('error', msg)
                 this.resetDialogsAndActions()
             })
         },
@@ -121,10 +109,14 @@ export default{
             this.edit=true;
         },
         resetDialogsAndActions(){
+            console.log('action cancelled');
+            
+            this.isEditing = false;
             this.confirmDialog = false;
             this.del = false;
             this.edit = false;
         }
-    }
+    },
+    emits: ['error', 'success']
 }
 </script>

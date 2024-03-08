@@ -63,10 +63,11 @@
 <script lang="ts">
 import { createNewCode, getValidCodes, deleteCode } from '@/https/code';
 import MultiuseDataTable from '@/components/MultiuseDataTable.vue';
+import type { IUserRole } from '@/interfaces/Https';
 export default{
     name: "invite-settings",
     components: {
-        MultiuseDataTable
+        MultiuseDataTable, 
     },
     data(){
         return {
@@ -80,8 +81,7 @@ export default{
                     value: 'admin'
                 }
             ],
-            // TODO - Create an interface for roleSelected
-            roleSelected: 'admin' as 'owner' | 'admin',
+            roleSelected: 'admin' as IUserRole,
             otpCreated: '' as string,
             copied: false as Boolean,
             showContent: false as Boolean,
@@ -106,7 +106,7 @@ export default{
                 },
             ],
             allOtpItems: [],
-            loadingOtpTable: false
+            loadingOtpTable: false,
         }
     },
     computed: {
@@ -130,7 +130,7 @@ export default{
                     this.showContent = true
                 }
             }).catch(err => {
-                // TODO - Show error message
+                this.$emit('error', 'Encontramos um erro ao gerar o código...');
             })
         },
         copyToCB(){
@@ -146,22 +146,22 @@ export default{
                 const codes = await getValidCodes(false);
                 this.allOtpItems = codes.response;
                 this.loadingOtpTable = false;
-                // TODO - Show success message
             }catch(err){
                 this.allOtpItems = []
                 this.loadingOtpTable = false;
-                // TODO - Show error message
+                this.$emit('error', 'Não conseguimos buscar os seus códigos existentes');
             }
         },
         async delCode(code : string){
             try{
                 const r = await deleteCode(code);
                 await this.fetchUserCodes()
-                // TODO - Show success message
+                this.$emit('success', 'Código excluido com sucesso!');
             }catch(err){
-                //TODO - show error message
+                this.$emit('error', 'Erro ao excluir o código...');
             }
-        }
-    }
+        },
+    },
+    emits: ['error', 'success']
 }
 </script>

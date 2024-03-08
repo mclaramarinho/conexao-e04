@@ -10,13 +10,16 @@
             <template v-slot:activator>
                 <v-btn color="var(--dark-blue)" v-model="dialogAdd" @click="dialogAdd = true" dark class="">Criar Nova</v-btn>
             </template>
-            <faq-add-edit variant="add" @cancel="dialogAdd = false" @done="dialogAdd = false" />
+            <faq-add-edit variant="add" @cancel="dialogAdd = false"
+              @done="e => doneEditing(e)" @error="e => $emit('error', e)" />
         </v-dialog>
     </template>
   </multiuse-data-table>
 
   <v-dialog v-model="dialogEdit" max-width="500px">
-    <faq-add-edit variant="edit" :item="selectedItem" @cancel="dialogEdit = false" @done="dialogEdit=false" />
+    <faq-add-edit variant="edit" :item="selectedItem"
+        @cancel="dialogEdit = false" @done="e => doneEditing(e)"
+        @error="e => $emit('error', e)" />
   </v-dialog>
   <v-dialog v-model="dialogDelete" max-width="500px">
     <dialog-delete-item />
@@ -28,19 +31,20 @@ import DialogDeleteItem from '@/components/smaller_components/dialogs/DialogDele
 import FaqAddEdit from '@/components/smaller_components/dialogs/FaqAddEdit.vue'
 import MultiuseDataTable from '@/components/MultiuseDataTable.vue'
 import {getAllFAQs} from '@/https/faqs'
+import type { IFaqGetBody } from '@/interfaces/Https';
+import type { IHTTPResponse } from '@/https/setup';
 
 export default {
     name: 'faq-view',
     components: {
-        FaqAddEdit, MultiuseDataTable, DialogDeleteItem
+        FaqAddEdit, MultiuseDataTable, DialogDeleteItem, 
     },
   data: () => ({
     dialogAdd: false,
     dialogDelete: false,
     loading: false,
     dialogEdit: false,
-    // TODO - Use an interface for selectedItem
-    selectedItem: {} as {id: string, question: string, answer: string},
+    selectedItem: {} as IFaqGetBody,
     headers: [
       {
         title: 'Pergunta',
@@ -49,14 +53,14 @@ export default {
         key: 'question'
       },
     ],
-    faqs: [] as Array<Object>,
+    faqs: [] as Array<IFaqGetBody>,
     tableActions:[
       {name: 'Excluir', color: 'var(--danger-red)', eventName: 'delete', prependIcon:'mdi-delete'},
       {name: 'Editar', color: 'var(--dark-blue)', eventName: 'edit', prependIcon:'mdi-pencil'}
-    ]
+    ],
   }),
   created() {
-    this.fetchItems()
+    this.fetchItems();
   },
 
   methods: {
@@ -66,28 +70,35 @@ export default {
         if(res.code === 200){
             this.faqs = res.response;
         }else{
-            // TODO - Show error message
+          this.$emit('error', 'Ocorreu um erro ao procurar os FAQs.');
         }
         this.loading = false;
     },
-    // TODO - Set a type for item
-    editItem(item) {
-        this.selectedItem = item
+    editItem(item : IFaqGetBody) {
+        this.selectedItem = item;
         this.dialogEdit = true;
     },
-    // TODO - Set a type for item
-    deleteItem(item) {       
-        this.selectedItem = item
-        this.dialogDelete = true
+    deleteItem(item : IFaqGetBody) {       
+        this.selectedItem = item;
+        this.dialogDelete = true;
     },
 
     deleteItemConfirm() {
-      this.closeDelete()
+      this.closeDelete();
     },
 
     closeDelete() {
-        this.dialogDelete = false
+        this.dialogDelete = false;
     },
+    doneEditing(event : IHTTPResponse){
+      if(event.data.method === 'POST'){
+        this.dialogAdd = false;
+        this.$emit('success', 'Pergunta criada com sucesso!')
+      }else if(event.data.method === 'PUT'){
+        this.dialogEdit = false;
+        this.$emit('success', 'FAQ atualizado com sucesso!')
+      }
+    }
   }
 }
 </script>

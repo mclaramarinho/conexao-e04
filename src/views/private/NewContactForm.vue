@@ -49,12 +49,13 @@
 <script lang="ts">
 import TextBtn from '@/components/smaller_components/buttons/TextBtn.vue';
 import {maxChars, telephone, email, notEmpty} from '@/utils/validations'
-import type { IContact } from '@/https/contacts';
+import type { IContact } from '@/interfaces/Https';
 import { createContact } from '@/https/contacts';
+
 export default {
     name: 'new-contact-form',
     components: {
-        TextBtn
+        TextBtn, 
     },
     data(){
      return{
@@ -69,7 +70,7 @@ export default {
             email: email,
             notEmpty: notEmpty,
             errorMessage: null as null | string,
-            showError: false as boolean
+            showError: false as boolean,
         }
     },
     methods:{
@@ -81,17 +82,19 @@ export default {
                 createContact(this.contact).then(r => {
                     if(r.code === 201){
                         (this.$refs.form as any)?.reset();
-                        // TODO - Show success message
+                        this.$emit('success', 'Contato criado com sucesso!');
                     }
                 })
                 .catch(e => {
-                    // TODO - Show error message
+                    console.error(e);
+                    this.$emit('error', 'Encontramos um erro ao criar o contato.');
                 })
             }else{
                 this.errorMessage = "Preencha todos os campos corretamente";
                 this.showError = true;
             }
-        }
-    }
+        },
+    },
+    emits: ['error', 'success']
 }
 </script>

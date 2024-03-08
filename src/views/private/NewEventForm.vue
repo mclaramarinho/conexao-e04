@@ -102,12 +102,14 @@ import EventPreviewCard from '@/components/smaller_components/cards/EventPreview
 import TextBtn from '@/components/smaller_components/buttons/TextBtn.vue';
 import { createEvent } from '@/https/events'
 import {maxChars, telephone, email, notEmpty} from '@/utils/validations'
-import type {IEvent} from '@/https/events'
+import type { IEvent } from '@/interfaces/Https';
 import type { StyleValue } from 'vue';
+import type { IContactType } from '@/interfaces/Https';
+
 export default {
     name: 'new-event-form',
     components: {
-        EventPreviewCard, TextBtn
+        EventPreviewCard, TextBtn, 
     },
     directives: {},
     data(){
@@ -120,8 +122,7 @@ export default {
                 eventEnd: null as null | string,
                 organizer: null as null | string,
                 contact: null as null | string,
-                // TODO - Create an interface for contactType
-                contactType: "phone" as "phone" | "email",
+                contactType: "phone" as IContactType,
                 location: null as null | string
             } as IEvent,
             maxChars: maxChars,
@@ -130,12 +131,11 @@ export default {
             notEmpty: notEmpty,
             errorMessage: null as null | string,
             showError: false as boolean,
-            style:  { overflowY: 'auto', display: 'block' } as StyleValue
+            style:  { overflowY: 'auto', display: 'block' } as StyleValue,
         }
     },
     mounted(){
-        // TODO - Create a function for this
-        document.getElementsByName('eventEnd')[0].setAttribute('min', new Date().toISOString().split('T')[0] + 'T00:00');
+        this.setMinTime()
     },
     methods:{
         async handleEventCreation(){
@@ -145,16 +145,23 @@ export default {
                 this.showError = false;
                 createEvent(this.event)
                 .then(r => {
-                    // TODO - Show success message
+                    if(r.code === 201){
+                        this.$emit('success', 'Evento criado com sucesso!');
+                    }else{throw new Error()};
                 })
                 .catch(e => {
-                    // TODO - Show error message
+                    console.error(e)
+                    this.$emit('error', 'Encontramos um erro ao criar o evento...');
                 });
             }else{
                 this.errorMessage = "Preencha todos os campos corretamente";
                 this.showError = true;
             }
-        }
-    }
+        },
+        setMinTime(){
+            return document.getElementsByName('eventEnd')[0].setAttribute('min', new Date().toISOString().split('T')[0] + 'T00:00');
+        },
+    },
+    emits: ['error', 'success']
 }
 </script>
