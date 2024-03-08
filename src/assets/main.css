@@ -53,3 +53,7 @@ html{
 .border-radius-0{
     border-radius: 0 !important;
 }
+
+.text-wrap-balance{
+    text-wrap: balance !important;
+}
