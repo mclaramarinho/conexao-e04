@@ -42,6 +42,7 @@ export default {
     },
     watch:{
         selection(nv, ov){
+            if(nv==='logout'){this.$emit('logout'); return;}
             if(nv !== ov) this.navigateEvent(nv);
             else return;
         }
@@ -76,6 +77,11 @@ export default {
                     value: "configuracoes",
                     prependIcon: "mdi-cog"
                 },
+                {
+                    title: "Sair",
+                    value: "logout",
+                    prependIcon: "mdi-exit-to-app"
+                }
             ]
         }
     },
