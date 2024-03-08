@@ -4,7 +4,7 @@
             <h3 class="font-blue text-center" style="text-wrap: balance;">{{message}}</h3>
        </v-card-title>
 
-       <v-card-subtitle>
+       <v-card-subtitle v-if="pswdRequired">
             <v-row no-gutters>
                 <pswd-field :pswd="pswdConfirm" @update:pswd="e => pswdConfirm = e" /> 
             </v-row>
@@ -39,6 +39,11 @@ export default {
                 {action: 'cancel', label: 'Cancelar', color: 'var(--dark-blue)', returnPswd: false},
                 {action: 'confirm', label: 'Continuar', color: 'var(--green)', returnPswd: true},
             ]
+        },
+        pswdRequired:{
+            type: Boolean,
+            required: false,
+            default: true
         }
     },
     data(){
