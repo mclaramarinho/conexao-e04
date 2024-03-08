@@ -9,7 +9,7 @@ export async function validateCode() : Promise<IHTTPResponse>{
     try{
         const code = useAccountCreationStore().otp;
         const REQ_URL = `${BASE_URL}/code/validate`;
-        const body = JSON.stringify({code});
+        const body = {code: code};
         const options = createOptions({method: 'POST'}, body);
         res.data = options;
 
@@ -18,6 +18,8 @@ export async function validateCode() : Promise<IHTTPResponse>{
         
         res.code = req.status;
         res.response = response;
+        console.log(res);
+        
         return res;
     }catch(err){
         // TODO - handle error more specifically

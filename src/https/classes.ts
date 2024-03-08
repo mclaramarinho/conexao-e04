@@ -2,26 +2,17 @@ import { useUserInfoStore } from "@/stores/userInfo";
 import { BASE_URL, createOptions } from "./setup";
 import type { IHTTPResponse } from "./setup";
 import type { IClass, IClassPostBody } from "@/interfaces/Https";
+import { timeToIsoFormat } from "@/utils/dates";
 
 export async function createClass(data : IClass) : Promise<IHTTPResponse> {
     const serviceURL = `${BASE_URL}/class/create`;
     const res = {} as IHTTPResponse;
     
-    // TODO - Check if these 2 are really necessary
     const newStartTime = data.startTime.map(time => {
-        const arr = time.split(':');
-        console.log(arr);
-        
-        const isoDate = new Date();
-        isoDate.setHours(parseInt(arr[0]), parseInt(arr[1]), 0, 0);
-        console.log(isoDate);
-        return isoDate.toISOString()
+        return timeToIsoFormat(time);
     });
     const newEndTime = data.endTime.map(time => {
-        const arr = time.split(':');
-        const isoDate = new Date();
-        isoDate.setHours(parseInt(arr[0]), parseInt(arr[1]), 0, 0);
-        return isoDate.toISOString()
+        return timeToIsoFormat(time);
     });
  
     const body = {

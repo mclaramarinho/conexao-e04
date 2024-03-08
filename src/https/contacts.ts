@@ -77,7 +77,6 @@ export async function deleteContact(id : string) : Promise<IHTTPResponse>{
 
 export async function updateContact(id : string, data : IContact) : Promise<IHTTPResponse>{
     const serviceURL = `${BASE_URL}/contact/update/${id}`;
-    // TODO - Create a body interface
     const body = {
         name: data.name,
         phone_number: data.phoneNumber,

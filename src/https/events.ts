@@ -112,11 +112,9 @@ export async function updateEvent(data : IEvent, id : string) : Promise<IHTTPRes
         last_edited_by: useUserInfoStore().UID,
     } as IEventPutBody;
 
-    // TODO - Surround with try-catch block
-    const options = createOptions({method: 'PUT'}, body);
-    res.data = options;
-
     try{
+        const options = createOptions({method: 'PUT'}, body);
+        res.data = options;
         const req = await fetch(serviceURL, options);
         const resBody = await req.json();
         res.code = req.status;
