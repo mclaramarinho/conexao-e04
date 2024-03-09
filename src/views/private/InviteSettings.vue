@@ -64,6 +64,7 @@
 import { createNewCode, getValidCodes, deleteCode } from '@/https/code';
 import MultiuseDataTable from '@/components/MultiuseDataTable.vue';
 import type { IUserRole } from '@/interfaces/Https';
+import { useUserInfoStore } from '@/stores/userInfo';
 export default{
     name: "invite-settings",
     components: {
@@ -73,13 +74,10 @@ export default{
         return {
             role: [
                 {
-                    title: 'Proprietário',
-                    value: 'owner'
-                },
-                {
                     title: 'Administrador',
                     value: 'admin'
-                }
+                },
+                
             ],
             roleSelected: 'admin' as IUserRole,
             otpCreated: '' as string,
@@ -121,6 +119,14 @@ export default{
     },
     async created(){
         await this.fetchUserCodes()
+        if(useUserInfoStore().role === 'owner'){
+            this.role.push(
+                {
+                    title: 'Proprietário',
+                    value: 'owner'
+                }
+            )
+        }
     },
     methods:{
         getCode(){
