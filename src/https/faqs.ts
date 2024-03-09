@@ -78,3 +78,23 @@ export async function getAllFAQs() : Promise<IHTTPResponse>{
         return res;
     }
 }
+
+export async function deleteFAQ(id : string) : Promise<IHTTPResponse>{
+    const serviceURL = `${BASE_URL}/faq/delete/${id}`;
+    const res = {} as IHTTPResponse;
+    try{
+        const options = createOptions({method: 'DELETE'}, undefined);
+        res.data = options;
+        
+        const req = await fetch(serviceURL, options);
+        const resBody =  {};
+        res.code = req.status;
+        res.response = resBody;
+        return res;
+    }catch(err){
+        res.code = 400;
+        res.response = err;
+        return res;
+    }
+    
+}
