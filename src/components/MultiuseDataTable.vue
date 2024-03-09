@@ -3,13 +3,7 @@
         loading-text="Carregando..." :loading="loading"
         :headers="(headers as any)" :items="tableItems" :item-value="itemValue"
         :class="classes"
-        :items-per-page="tableItems.length === 1 ? 1 : tableItems.length <= 4 ? Math.floor(tableItems.length/2) 
-                                    : tableItems.length <= 8 || tableItems.length > 8 ? Math.floor(tableItems.length/4) 
-                                    : 0"    
-        :items-per-page-options="tableItems.length > 0 && tableItems.length === 1 ? [1] 
-                                    : tableItems.length <= 4 ? [1, tableItems.length]
-                                    : tableItems.length <= 8 ? [1, Math.floor(tableItems.length/4), Math.floor(tableItems.length/2), tableItems.length]
-                                    : []"
+       
                                     
         :show-expand="expandable" :expand-on-click="expandable"
         :show-current-page="showPage" @update:expanded="e => updateExpandedEvent(e)">
