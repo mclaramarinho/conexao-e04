@@ -52,7 +52,7 @@
                                 </v-window-item>
 
                                 <v-window-item value="Users">
-                                    <users-view />
+                                    <users-view @success="e => setSnack('success', e)" @error="e => setSnack('error', e)" />
                                 </v-window-item>
                                 
                                 <v-window-item :value="title">
