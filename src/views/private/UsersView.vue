@@ -58,7 +58,7 @@ export default {
         this.fetchUsers()
     },
     methods:{
-        fetchUsers(){
+        async fetchUsers(){
             this.loading = true,
             admin_get_all().then(r => {
                 if(r.code === 200){
@@ -75,8 +75,15 @@ export default {
                 const auth = await login(useUserInfoStore().email.toString(), pswd);
                 if(auth){
                     const userDeleted = await owner_delete_admin(user.firebase_uid as string);
-                    console.log(userDeleted)
-                    this.$emit('success', 'O usuário foi excluído com sucesso!')
+                    if(userDeleted.code === 204){
+                        this.confirmDelete = false;
+                        await this.fetchUsers()
+                        this.$emit('success', 'O usuário foi excluído com sucesso');
+                        
+                    }else{
+                        throw new Error();
+                    }
+                    
                 }else{
                     throw new Error('invalid-credentials/error');
                 }
