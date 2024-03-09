@@ -21,8 +21,8 @@
         @cancel="dialogEdit = false" @done="e => doneEditing(e)"
         @error="e => $emit('error', e)" />
   </v-dialog>
-  <v-dialog v-model="dialogDelete" max-width="500px">
-    <dialog-delete-item />
+  <v-dialog v-model="dialogDelete" max-width="500px" @update:model-value="dialogDelete=false">
+    <dialog-delete-item @delete-item-confirm="deleteItemConfirm" @close-delete="dialogDelete = false" />
   </v-dialog>
 </template>
 
@@ -30,7 +30,7 @@
 import DialogDeleteItem from '@/components/smaller_components/dialogs/DialogDeleteItem.vue';
 import FaqAddEdit from '@/components/smaller_components/dialogs/FaqAddEdit.vue'
 import MultiuseDataTable from '@/components/MultiuseDataTable.vue'
-import {getAllFAQs} from '@/https/faqs'
+import {deleteFAQ, getAllFAQs} from '@/https/faqs'
 import type { IFaqGetBody } from '@/interfaces/Https';
 import type { IHTTPResponse } from '@/https/setup';
 
@@ -83,19 +83,34 @@ export default {
         this.dialogDelete = true;
     },
 
-    deleteItemConfirm() {
+    async deleteItemConfirm() {
       this.closeDelete();
+      try{
+        const delRes = await deleteFAQ(this.selectedItem._id);
+        console.log(delRes)
+        if(delRes.code===204){
+          await this.fetchItems()
+          this.$emit('success', 'Pergunta excluída com sucesso!');
+        }else{
+          throw new Error()
+        }
+      }catch(err){
+        this.$emit('error', 'Encontramos um erro inesperado.')
+      }
+      
     },
 
     closeDelete() {
         this.dialogDelete = false;
     },
-    doneEditing(event : IHTTPResponse){
+    async doneEditing(event : IHTTPResponse){
       if(event.data.method === 'POST'){
         this.dialogAdd = false;
+        await this.fetchItems()
         this.$emit('success', 'Pergunta criada com sucesso!')
       }else if(event.data.method === 'PUT'){
         this.dialogEdit = false;
+        await this.fetchItems()
         this.$emit('success', 'FAQ atualizado com sucesso!')
       }
     }
