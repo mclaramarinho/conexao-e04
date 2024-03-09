@@ -5,7 +5,7 @@
             <AdminCreateStepOne v-if="currentStep===1 && !loadingNextPage" @procceed="handleStepChange" />
 
             <v-progress-circular size="large" class="position-fixed top-50 start-50 translate-middle"
-                        indeterminate color="var(--dark-blue)" v-if="loadingNextPage" />
+                        indeterminate color="var(--dark-blue)" v-if="currentStep ===1 && loadingNextPage" />
                         
             <AdminCreateStepTwo v-if="currentStep===2" @procceed="handleStepChange" />
         </v-container>
