@@ -112,11 +112,11 @@ export interface IContactPutBody{
 };
 
 export interface IEvent {
-    eventName: string;
-    isMandatory: boolean;
-    eventDescription: string;
-    eventStart: string;
-    eventEnd: string;
+    eventName: null | string;
+    isMandatory:  null | boolean;
+    eventDescription:  null | string;
+    eventStart:  null | string;
+    eventEnd:  null | string;
     organizer: string | null;
     contact: string | null;
     location: string | null;
