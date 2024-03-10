@@ -131,6 +131,8 @@ export default{
                     }
                 }catch(e : any){
                     console.log(otp_validation)
+                    console.log("error: " + e)
+                    console.log(e.message)
                     this.error = true;
                     
                     if(e.message.includes('Não') || e.message.includes('inesperado')){
