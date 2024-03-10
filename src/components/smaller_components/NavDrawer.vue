@@ -1,16 +1,16 @@
 <template>
-    
-    <v-navigation-drawer  
+
+    <v-navigation-drawer
         :location="$vuetify.display.smAndDown ? 'top' : 'start'"
         :expand-on-hover="!$vuetify.display.smAndDown"
         :rail="!$vuetify.display.smAndDown"
         :class="$vuetify.display.smAndDown && 'mt-5'"
         :style="$vuetify.display.smAndDown && (showDrawer ? {transform:'translateY(0%)'} : {transform:'translateY(-90%)'})"
         permanent>
-        
+
         <template v-slot:append v-if="$vuetify.display.smAndDown">
             <div class="text-center py-2">
-                <v-icon 
+                <v-icon
                     :icon="showDrawer ? 'mdi-chevron-double-up' : 'mdi-chevron-double-down'"
                     color="var(--dark-blue)"
                     :onmouseup="(e : any) => showDrawer = !showDrawer"
@@ -24,7 +24,7 @@
                 :title="(name || 'carregando')" :subtitle="(email || '') + ' - ' + (role || '')" />
             <v-divider />
         </v-list>
-        <v-list @click:select="e => selection=(e.id as string)"> 
+        <v-list @click:select="e => handleTabClick(e.id as string)">
             <v-list-item v-for="item in navItems" :key="item.prependIcon"
                 :title="item.title" :value="item.value" :prepend-icon="item.prependIcon"></v-list-item>
         </v-list>
@@ -36,17 +36,19 @@
 export default {
     name: 'NavDrawer',
     props: {
-        email: String, 
+        email: String,
         name: String,
         role: String
     },
-    watch:{
-        selection(nv, ov){
-            if(nv==='logout'){this.$emit('logout'); return;}
-            if(nv !== ov) this.navigateEvent(nv);
-            else return;
-        }
-    },
+    // watch:{
+    //     selection(nv, ov){
+    //         console.log(nv);
+
+    //         if(nv==='logout'){this.$emit('logout'); console.log('logoutr');return;}
+    //         if(nv !== ov) this.navigateEvent(nv);
+    //         else return;
+    //     }
+    // },
     data() {
         return {
             showDrawer: false as boolean,
@@ -91,16 +93,33 @@ export default {
             return false
         },
         navigateEvent(value: string){
-            
+
             const fullBase = this.$route.path.split('/');
-            
+
             if(fullBase.length > 4) fullBase.pop();
 
             const base = fullBase.join('/');
-            
+
             this.$router.push({path: base+'/'+value});
+
+
+        },
+        handleTabClick(e : string){
+            console.log(e);
             
-    },
+            if(e === 'logout'){
+                this.selection = 'logout';
+                this.$emit('logout');
+                return;
+            }
+            if(this.selection === e){
+                return;
+            }
+
+            this.selection = e;
+            this.navigateEvent(e);
+
+        }
 }
 }
 </script>

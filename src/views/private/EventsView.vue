@@ -1,4 +1,5 @@
 <template>
+    <!-- TODO - Improve UX -->
     <circular-loader v-if="!render" />
     
     <calendar-component v-if="render"
