@@ -146,6 +146,18 @@ export default {
                 createEvent(this.event)
                 .then(r => {
                     if(r.code === 201){
+                        this.$refs.form?.reset();
+                        this.event={
+                            eventName: null as null | string,
+                            isMandatory: false,
+                            eventDescription: null,
+                            eventStart: null,
+                            eventEnd: null,
+                            organizer: null,
+                            contact: null,
+                            contactType: "phone",
+                            location: null
+                        };
                         this.$emit('success', 'Evento criado com sucesso!');
                     }else{throw new Error()};
                 })
