@@ -1,19 +1,27 @@
 <template>
     <circular-loader v-if="!render" />
-    <v-table v-if="render" >
+    <v-table v-if="render">
         <thead>
             <tr >
                 <th class="text-center">DIA</th>
-                <th class="text-center">INICIO</th>
-                <th class="text-center">FIM</th>
+                
+                <th class="text-center" v-if="$vuetify.display.mdAndUp">INICIO</th>
+                <th class="text-center" v-if="$vuetify.display.mdAndUp">FIM</th>
+
+                <th class="text-center" v-if="$vuetify.display.mdAndDown">HORÁRIO</th>
+
                 <th class="text-center">DISCIPLINA</th>
-                <th class="text-center">SALA</th>
-                <th class="text-center"></th>
+                <th class="text-center" v-if="$vuetify.display.mdAndUp">SALA</th>
+                <th class="text-center">
+                    <v-icon>mdi-information</v-icon>
+                </th>
             </tr>
         </thead>
 
         <tbody>
             <tr v-for="(day, i) in weekdays" :key="i">
+
+                <!-- WEEKDAY -->
                 <div v-if="day.classes.length > 1" class='mx-auto h-100'>
                     <br v-for="(j) in day.classes.length" :key="j">
                        <p class="text-center">{{ day.abbr.toUpperCase() }}</p> 
@@ -24,8 +32,10 @@
                     <p class="text-center">{{ day.abbr.toUpperCase() }}</p> 
                     <br>
                 </div>
+                
+                
                 <!-- START -->
-                <td>
+                <td v-if="$vuetify.display.mdAndUp">
                     <br v-if="day.classes.length > 1">
                     <div v-for="(c, index) in day.classes" :key="index">
                         <p class="text-center">{{ c.start === null ? '-' : getTime(c.start) }}</p>
@@ -33,13 +43,24 @@
                     </div>
                 </td>
                 <!-- END -->
-                <td>
+                <td v-if="$vuetify.display.mdAndUp">
                     <br v-if="day.classes.length > 1">
                     <div v-for="(c, index) in day.classes" :key="index">
                         <p class="text-center">{{ c.end === null ? '-' : getTime(c.end) }}</p>
                         <br v-if="day.classes.length > 1">
                     </div>
                 </td>
+
+
+                <!-- TIME SCHEDULE -->
+                <td v-if="$vuetify.display.mdAndDown">
+                    <br v-if="day.classes.length > 1">
+                    <div v-for="(c, i) in day.classes" :key="i">
+                        <p class="text-center">{{ (c.start === null && c.end === null) ? '-' : (`${getTime(c.start)} - ${getTime(c.end)}`) }}</p>
+                        <br v-if="day.classes.length > 1">
+                    </div>
+                </td>
+
                 <!-- CLASS NAME -->
                 <td>
                     <br v-if="day.classes.length > 1">
@@ -48,8 +69,9 @@
                         <br v-if="day.classes.length > 1">
                     </div>
                 </td>
+
                 <!-- ROOM -->
-                <td>
+                <td v-if="$vuetify.display.mdAndUp">
                     <br v-if="day.classes.length > 1">
                     <div v-for="(c, index) in day.classes" :key="index">
                         <p class="text-center">{{ c.room }}</p>
@@ -60,8 +82,10 @@
                 <td>
                     <br v-if="day.classes.length > 1">
                     <div v-for="(c, index) in day.classes" :key="index">
-                        <p class="text-center"><v-btn icon="mdi-plus" size="xs" variant="text" color="var(--dark-blue)"
-                            @click="handleOpenDetails(c._id)"/></p>
+                        <p class="text-center">
+                            <v-btn icon="mdi-plus" size="xs" variant="text" color="var(--dark-blue)"
+                                        @click="handleOpenDetails(c._id)"/>
+                        </p>
                         <br v-if="day.classes.length > 1">
                     </div>
                 </td>

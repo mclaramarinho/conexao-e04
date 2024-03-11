@@ -11,7 +11,7 @@
             <v-col sm="8" lg="6" class="position-relative">
                 <v-container class="h-100">
                     <v-row no-gutters
-                        :class="currentDisplay === 2 ? 'h-90 w-90' : 'h-75'"
+                        :class="(currentDisplay === 2 || currentDisplay === 3) ? 'h-90 w-90' : 'h-75'"
                         class=" position-absolute top-50 start-50 translate-middle w-75 align-content-baseline">
                         <v-col cols="12" class="w-fit">
                             <v-row no-gutters>
@@ -22,7 +22,7 @@
                             <slot name="header" v-if="currentDisplay !== 1" />
                         </v-col>
 
-                        <v-col cols="12" id="scrollable_col" :class="currentDisplay === 2 ? 'h-100' : 'h-75'" class="overflow-y-auto">
+                        <v-col cols="12" id="scrollable_col" :class="(currentDisplay === 2 || currentDisplay === 3) ? 'h-100' : 'h-75'" class="overflow-y-auto">
                             <slot name="section" />
                         </v-col>
                     </v-row>
