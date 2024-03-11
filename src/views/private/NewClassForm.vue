@@ -166,12 +166,11 @@ export default {
         },
         markAsOnline(value : boolean){
             this.onlineClass = value;
+
             if(value){
-                if(this.classes.days.length === 1 && this.classes.days[0] === ''){
-                    this.classes.days.pop();
-                    this.classes.startTime.pop();
-                    this.classes.endTime.pop();
-                }
+                this.classes.days = [];
+                this.classes.startTime = [];
+                this.classes.endTime = [];
             }else{
                 if(this.classes.days.length === 0){
                     this.createSlot();
