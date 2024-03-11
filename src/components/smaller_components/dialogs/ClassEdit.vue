@@ -4,7 +4,7 @@
             <h3 class="text-center font-blue" style="text-wrap: balance;">Editar Disciplina</h3>
         </v-card-title>
         <v-card-text>
-            <v-form ref="editClassForm">
+            <v-form ref="editClassForm" :disabled="!allowEditing">
                 <v-row>
                     <v-col cols="12">
                         <v-text-field variant="outlined" label="Disciplina" :model-value="classInfo.name" 
@@ -54,8 +54,7 @@
             
         </v-card-text>
         
-        <v-card-actions>
-            
+        <v-card-actions v-if="allowEditing">
             <v-spacer></v-spacer>
             <v-btn color="var(--black)" size="large" class="font-12" variant="tonal" @click="$emit('cancel')">Cancel</v-btn>
             <v-spacer></v-spacer>
@@ -75,6 +74,11 @@ export default {
         id: {
             type: String,
             required: true
+        },
+        allowEditing:{
+            type: Boolean,
+            required: false,
+            default: true
         }
     },
     data(){
@@ -145,3 +149,9 @@ export default {
     emits: ['cancel', 'done']
 }
 </script>
+
+<style>
+.v-theme--light{
+    --v-disabled-opacity: 0.95 !important;
+}
+</style>
